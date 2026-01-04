@@ -1,0 +1,197 @@
+# API Contract: Update Todo with Extended Fields
+
+**Endpoint**: `PUT /api/v1/todos/{id}`
+**Feature**: 002-todo-extended
+**Status**: Draft
+**Date**: 2026-01-02
+
+## Description
+
+Update an existing todo task. All extended fields are optional and can be updated independently. Existing CRUD behavior is preserved.
+
+---
+
+## Request
+
+### HTTP Method
+`PUT`
+
+### Headers
+```
+Content-Type: application/json
+Authorization: Bearer <JWT_TOKEN>
+```
+
+### URL Parameters
+
+| Parameter | Type | Required? | Description |
+|-----------|------|-----------|-------------|
+| `id` | integer | **Yes** | Task identifier (path parameter) |
+
+### Request Body
+
+All fields are optional. Only provided fields are updated.
+
+| Field | Type | Required? | Constraints | Description |
+|-------|------|-----------|-------------|-------------|
+| `title` | string | No | 1-500 chars | Task title |
+| `description` | string | No | 0-5000 chars | Extended details |
+| `priority` | enum | No | `"low"` \| `"medium"` \| `"high"` | Task priority |
+| `tags` | array of strings | No | 0-10 tags, max 50 chars each | Array of tag strings |
+| `due_date` | datetime (ISO 8601) | No | UTC datetime string | Due date and time |
+| `recurrence` | enum | No | `"none"` \| `"daily"` \| `"weekly"` \| `"monthly"` | Recurrence pattern |
+
+### Example Request (Update Priority and Tags)
+
+```json
+{
+  "priority": "high",
+  "tags": ["work", "urgent"]
+}
+```
+
+### Example Request (Update Due Date)
+
+```json
+{
+  "due_date": "2026-01-20T09:00:00Z"
+}
+```
+
+### Example Request (Minimal - Phase I Compatible)
+
+```json
+{
+  "title": "Updated task title",
+  "description": "Updated description"
+}
+```
+
+---
+
+## Response
+
+### Success: 200 OK
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | integer | Unique task identifier |
+| `user_id` | integer | Task owner ID |
+| `title` | string | Task title |
+| `description` | string | Extended details |
+| `completed` | boolean | Completion status |
+| `priority` | string | `"low"` \| `"medium"` \| `"high"` (or `null`) |
+| `tags` | array | Array of tag strings |
+| `due_date` | datetime | ISO 8601 datetime or `null` |
+| `recurrence` | string | `"none"` \| `"daily"` \| `"weekly"` \| `"monthly"` (or `null`) |
+| `created_at` | datetime | ISO 8601 UTC timestamp |
+| `updated_at` | datetime | ISO 8601 UTC timestamp |
+
+### Example Response
+
+```json
+{
+  "id": 42,
+  "user_id": 1,
+  "title": "Complete project report",
+  "description": "Final report for Q4 with financial analysis",
+  "completed": false,
+  "priority": "high",
+  "tags": ["work", "urgent"],
+  "due_date": "2026-01-20T09:00:00Z",
+  "recurrence": "none",
+  "created_at": "2026-01-02T12:34:56Z",
+  "updated_at": "2026-01-02T14:22:18Z"
+}
+```
+
+---
+
+## Error Responses
+
+### 400 Bad Request
+
+| Error Code | Message | Cause |
+|------------|---------|--------|
+| `INVALID_PRIORITY` | `priority` must be one of: low, medium, high | Invalid enum value |
+| `DUPLICATE_TAG` | Duplicate tag: `{tag_name}` | Same tag appears multiple times in array |
+| `INVALID_TAG_COUNT` | Maximum 10 tags allowed | More than 10 tags provided |
+| `INVALID_TAG_FORMAT` | Tag `{tag_name}` contains invalid characters | Special characters not allowed |
+| `INVALID_DUE_DATE` | `due_date` must be valid ISO 8601 datetime | Malformed datetime string |
+| `RECURRENCE_REQUIRES_DUE_DATE` | `recurrence` requires `due_date` to be set | Pattern provided without due date |
+| `INVALID_RECURRENCE` | `recurrence` must be one of: none, daily, weekly, monthly | Invalid enum value |
+| `TASK_NOT_FOUND` | Task with id `{id}` not found | Invalid or deleted task |
+
+### 404 Not Found
+
+| Error Code | Message | Cause |
+|------------|---------|--------|
+| `TASK_NOT_FOUND` | Task with id `{id}` not found | Invalid task ID |
+
+### 403 Forbidden
+
+| Error Code | Message | Cause |
+|------------|---------|--------|
+| `FORBIDDEN` | You do not have permission to update this task | User does not own this task |
+
+### Example Error Response
+
+```json
+{
+  "error": "TASK_NOT_FOUND",
+  "message": "Task with id 999 not found",
+  "details": {
+    "task_id": 999
+  }
+}
+```
+
+---
+
+## Constraints & Rules
+
+### Business Logic
+
+1. **Owner Check**: User must own the task (`user_id` matches authenticated user)
+2. **Field Independence**: Each field can be updated without affecting others
+3. **Default Values**: No defaults on update - explicit values only
+4. **Recurrence Update**: Changing `recurrence` from `"none"` to a pattern requires `due_date` to be set
+
+### Validation Rules
+
+1. **Priority**: Must be `"low"`, `"medium"`, or `"high"` (case-insensitive)
+2. **Tags**: 0-10 unique strings, max 50 characters each
+3. **Due Date**: Must be valid ISO 8601 UTC datetime if provided
+4. **Recurrence**: Must be `"none"`, `"daily"`, `"weekly"`, or `"monthly"` (case-insensitive)
+5. **Ownership**: Authenticated user must own the task
+
+### Backward Compatibility
+
+1. **Phase I Requests**: Requests without any extended fields work exactly as before
+2. **Partial Updates**: Only provided fields are updated; others remain unchanged
+3. **Null Handling**: Omitting a field does not set it to `null` - use explicit values
+4. **Response Format**: Always includes all extended fields (or `null`)
+
+---
+
+## Testing Checklist
+
+- [ ] Update `priority` only
+- [ ] Update `tags` only
+- [ ] Add tags to task with existing tags
+- [ ] Remove tags from task
+- [ ] Replace all tags
+- [ ] Update `due_date` only
+- [ ] Update `recurrence` only
+- [ ] Update `title` and `description` (Phase I compatibility)
+- [ ] Update multiple fields (priority, tags, due_date) together
+- [ ] Update completed task (recurrence check)
+- [ ] Test validation: invalid `priority` returns 400
+- [ ] Test validation: duplicate tag returns 400
+- [ ] Test validation: 11+ tags returns 400
+- [ ] Test validation: invalid datetime returns 400
+- [ ] Test validation: recurrence without due_date returns 400
+- [ ] Test error: update non-existent task returns 404
+- [ ] Test error: update another user's task returns 403
+- [ ] Verify response includes all fields (including extended)
+- [ ] Verify `updated_at` timestamp is updated

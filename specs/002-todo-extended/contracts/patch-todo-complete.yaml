@@ -1,0 +1,260 @@
+# API Contract: Complete Todo with Recurrence
+
+**Endpoint**: `PATCH /api/v1/todos/{id}/complete`
+**Feature**: 002-todo-extended
+**Status**: Draft
+**Date**: 2026-01-02
+
+## Description
+
+Mark a todo as completed. If the task has a recurrence pattern, automatically create the next instance. This endpoint extends the Phase I completion behavior with recurrence automation.
+
+---
+
+## Request
+
+### HTTP Method
+`PATCH`
+
+### Headers
+```
+Content-Type: application/json
+Authorization: Bearer <JWT_TOKEN>
+```
+
+### URL Parameters
+
+| Parameter | Type | Required? | Description |
+|-----------|------|-----------|-------------|
+| `id` | integer | **Yes** | Task identifier (path parameter) |
+
+### Request Body
+
+Empty request body (action only, no data required).
+
+```json
+{}
+```
+
+---
+
+## Response
+
+### Success: 200 OK
+
+Returns the completed task. If recurrence is set, also includes the newly created next instance.
+
+#### Case 1: No Recurrence (Phase I Behavior)
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | integer | Unique task identifier |
+| `user_id` | integer | Task owner ID |
+| `title` | string | Task title |
+| `description` | string | Extended details |
+| `completed` | boolean | `true` (just completed) |
+| `priority` | string | `"low"` \| `"medium"` \| `"high"` (or `null`) |
+| `tags` | array | Array of tag strings |
+| `due_date` | datetime | ISO 8601 datetime or `null` |
+| `recurrence` | string | `"none"` \| `"daily"` \| `"weekly"` \| `"monthly"` (or `null`) |
+| `created_at` | datetime | ISO 8601 UTC timestamp |
+| `updated_at` | datetime | ISO 8601 UTC timestamp |
+
+#### Case 2: Recurrence Set (New Instance Created)
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `completed_task` | object | The task that was just completed (same schema as above) |
+| `next_task` | object | Newly created instance for next recurrence (same schema as above) |
+
+### Example Response (No Recurrence)
+
+```json
+{
+  "id": 42,
+  "user_id": 1,
+  "title": "Buy groceries",
+  "description": "Milk, eggs, bread",
+  "completed": true,
+  "priority": "medium",
+  "tags": [],
+  "due_date": null,
+  "recurrence": "none",
+  "created_at": "2026-01-02T12:34:56Z",
+  "updated_at": "2026-01-02T14:22:18Z"
+}
+```
+
+### Example Response (With Weekly Recurrence)
+
+```json
+{
+  "completed_task": {
+    "id": 42,
+    "user_id": 1,
+    "title": "Weekly team meeting",
+    "description": "Discuss project status and blockers",
+    "completed": true,
+    "priority": "high",
+    "tags": ["work", "meeting"],
+    "due_date": "2026-01-02T10:00:00Z",
+    "recurrence": "weekly",
+    "created_at": "2026-01-02T12:34:56Z",
+    "updated_at": "2026-01-02T14:22:18Z"
+  },
+  "next_task": {
+    "id": 43,
+    "user_id": 1,
+    "title": "Weekly team meeting",
+    "description": "Discuss project status and blockers",
+    "completed": false,
+    "priority": "high",
+    "tags": ["work", "meeting"],
+    "due_date": "2026-01-09T10:00:00Z",
+    "recurrence": "weekly",
+    "created_at": "2026-01-02T14:22:19Z",
+    "updated_at": "2026-01-02T14:22:19Z"
+  }
+}
+```
+
+---
+
+## Error Responses
+
+### 400 Bad Request
+
+| Error Code | Message | Cause |
+|------------|---------|--------|
+| `ALREADY_COMPLETED` | Task is already completed | Task's `completed` field is already `true` |
+| `INVALID_RECURRENCE` | Cannot calculate next due date | Invalid recurrence pattern or no due date |
+
+### 404 Not Found
+
+| Error Code | Message | Cause |
+|------------|---------|--------|
+| `TASK_NOT_FOUND` | Task with id `{id}` not found | Invalid or deleted task |
+
+### 403 Forbidden
+
+| Error Code | Message | Cause |
+|------------|---------|--------|
+| `FORBIDDEN` | You do not have permission to complete this task | User does not own this task |
+
+### Example Error Response
+
+```json
+{
+  "error": "ALREADY_COMPLETED",
+  "message": "Task is already completed",
+  "details": {
+    "task_id": 42
+  }
+}
+```
+
+---
+
+## Recurrence Logic
+
+### Next Due Date Calculation
+
+When a task is completed with `recurrence != "none"`:
+
+1. **Daily**: `current_due_date + 1 day`
+   - Example: `2026-01-02T10:00:00Z` → `2026-01-03T10:00:00Z`
+
+2. **Weekly**: `current_due_date + 7 days` (preserve day of week)
+   - Example: `2026-01-02T10:00:00Z` (Monday) → `2026-01-09T10:00:00Z` (Monday)
+
+3. **Monthly**: `current_due_date + 1 month` (preserve day if possible)
+   - Example: `2026-01-02T10:00:00Z` → `2026-02-02T10:00:00Z`
+   - Edge case: `2026-01-31T10:00:00Z` → `2026-02-28T10:00:00Z` (February)
+   - Edge case: `2026-01-30T10:00:00Z` → `2026-02-28T10:00:00Z` (non-leap year)
+
+### New Task Creation
+
+When creating the next instance:
+
+| Field | Value | Description |
+|-------|-------|-------------|
+| `title` | Same as original task | Task title copied |
+| `description` | Same as original task | Task description copied |
+| `priority` | Same as original task | Priority copied |
+| `tags` | Same as original task | Tags array copied |
+| `due_date` | Calculated `next_run` | Next due date based on recurrence |
+| `recurrence` | Same as original task | Recurrence pattern copied |
+| `completed` | `false` | New task starts as pending |
+| `user_id` | Same as original task | Owner stays the same |
+| `created_at` | `NOW()` | Current timestamp |
+| `updated_at` | `NOW()` | Current timestamp |
+
+### Recurrence Limits
+
+- **Maximum instances**: 52 (1 year) per recurring task to prevent infinite loops
+- **Stop condition**: User changes `recurrence` to `"none"` (no more instances created)
+- **Edge case handling**: Invalid dates (e.g., February 30th) adjusted to nearest valid date
+
+---
+
+## Constraints & Rules
+
+### Business Logic
+
+1. **Completion Idempotence**: Already-completed tasks cannot be completed again (returns 400)
+2. **Owner Check**: Authenticated user must own the task
+3. **Recurrence Check**: Only create new instance if `recurrence != "none"`
+4. **Due Date Required**: Recurrence patterns require `due_date` to be set
+5. **Same User**: New task belongs to same user as original task
+6. **Immediate Creation**: New task created synchronously (no background jobs)
+7. **All Fields Copied**: `title`, `description`, `priority`, `tags`, `recurrence` copied to new instance
+
+### Validation Rules
+
+1. **Task Exists**: Task with provided `id` must exist
+2. **Not Already Completed**: Task's `completed` field must be `false`
+3. **Owner Match**: Authenticated user's ID must match task's `user_id`
+4. **Valid Recurrence**: If `recurrence` is set, must be valid pattern
+
+### Backward Compatibility
+
+1. **Phase I Behavior**: Tasks without `recurrence` complete as before (no new instance created)
+2. **Optional Fields**: Tasks without `priority`, `tags`, `due_date` still work
+3. **Response Format**: Phase I response format (single object) for non-recurring tasks
+4. **Extended Response**: Recurring tasks return both `completed_task` and `next_task`
+
+---
+
+## Testing Checklist
+
+### Non-Recurring Tasks (Phase I)
+
+- [ ] Complete task with no recurrence
+- [ ] Complete already-completed task (returns 400)
+- [ ] Complete task owned by different user (returns 403)
+- [ ] Complete non-existent task (returns 404)
+- [ ] Verify response includes single object (not `next_task`)
+
+### Recurring Tasks (Phase II)
+
+- [ ] Complete daily recurring task
+- [ ] Verify new task due date is +1 day
+- [ ] Complete weekly recurring task
+- [ ] Verify new task due date is +7 days (preserves day of week)
+- [ ] Complete monthly recurring task
+- [ ] Verify new task due date is +1 month (preserves day if possible)
+- [ ] Complete monthly task on January 31st
+- [ ] Verify new task due date is February 28th/29th (edge case)
+- [ ] Verify all fields copied to new instance (title, description, priority, tags)
+- [ ] Verify new task has `completed = false`
+- [ ] Verify new task belongs to same user
+- [ ] Verify response includes both `completed_task` and `next_task`
+
+### Edge Cases
+
+- [ ] Complete task with `recurrence = "none"` (no new instance)
+- [ ] Complete task with recurrence but no `due_date` (returns 400)
+- [ ] Complete task after 52 instances (no new instance - limit reached)
+- [ ] Change task recurrence to "none" and complete (no new instance)
+- [ ] Verify response format differs for recurring vs. non-recurring
+- [ ] Verify `next_task` has correct `due_date` calculation

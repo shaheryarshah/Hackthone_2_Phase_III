@@ -1,55 +1,109 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!--
+Sync Impact Report:
+- Version change: 1.0.0 → 1.1.0 (MINOR: material expansion of quality rules and success criteria)
+- Modified principles: None (all original principles preserved)
+- Added sections: Backward Compatibility principle, Extended Features scope
+- Removed sections: None
+- Templates requiring updates:
+  ✅ .specify/templates/plan-template.md - Constitution Check remains compatible
+  ✅ .specify/templates/spec-template.md - Scope/requirements alignment maintained
+  ✅ .specify/templates/tasks-template.md - Task categorization still reflects principles
+- Follow-up TODOs: None
+-->
+
+# Phase II Constitution – Todo Full-Stack Web Application
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Spec-Driven Development
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+All development MUST begin with a written specification. No code is written until the feature specification (spec.md) is documented and approved. The specification serves as the contract that governs all implementation decisions. Changes to implementation require specification updates first.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+**Rationale**: Prevents scope creep, ensures shared understanding, and provides a reference for validation.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### II. Strict Separation of Concerns
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+Backend and frontend MUST be completely separated. The backend is the single source of truth - it owns all business logic, data validation, and persistence. The frontend is a thin client that only displays data and captures user input. No business logic, data transformation, or validation rules exist in the frontend.
 
-### [PRINCIPLE_6_NAME]
+**Rationale**: Enables independent scaling, testing, and evolution of each layer.
 
+### III. API-First Architecture
 
-[PRINCIPLE__DESCRIPTION]
+The REST API is the authoritative contract between client and server. All data flows through well-defined HTTP endpoints. The frontend cannot bypass the API to access data or perform operations. API documentation MUST be maintained alongside code.
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+**Rationale**: Ensures consistency, enables multiple clients, and provides clear boundaries.
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+### IV. Input Validation on Backend
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+All input from the frontend MUST be validated on the backend. Validation includes type checking, range validation, format validation, and business rule enforcement. Invalid input MUST return appropriate HTTP status codes with clear error messages.
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+**Rationale**: Frontend validation can be bypassed; backend validation is the only reliable defense.
+
+### V. Proper Error Handling
+
+All API endpoints MUST return appropriate HTTP status codes (2xx for success, 4xx for client errors, 5xx for server errors). Error responses MUST include sufficient information for debugging without exposing internal system details. Errors MUST be logged with context for troubleshooting.
+
+**Rationale**: Enables reliable client handling and effective debugging.
+
+### VI. Clean Architecture
+
+Code MUST be organized with clear separation between models, services, and API layers. Each layer has a single responsibility. Dependencies flow inward (API → Service → Model). Testing MUST be possible at each layer in isolation.
+
+**Rationale**: Maintainability, testability, and understandability over time.
+
+### VII. Backward Compatibility
+
+All Phase II features MUST be backward compatible with existing functionality. No breaking changes are allowed to existing CRUD operations or API contracts. Existing database schema MUST be preserved; new fields can be added but existing columns cannot be removed or renamed.
+
+**Rationale**: Ensures existing users and integrations continue to function without interruption during feature rollout.
+
+## Technology Constraints
+
+- **Backend**: Python 3.11+ with FastAPI framework
+- **Frontend**: Next.js with React
+- **Database**: Single database (SQL or NoSQL) - existing DB schema can evolve but must preserve backward compatibility
+- **Communication**: HTTP REST API only
+- **No AI agents or MCP tools** are to be used in this phase
+
+## Quality Rules
+
+- All API contracts MUST be documented
+- All endpoints MUST have input validation
+- All errors MUST return appropriate HTTP status codes
+- Frontend and backend MUST run independently
+- All CRUD operations MUST persist to the database
+- Features MUST be optional per task (no forced opt-in)
+- Defaults MUST be safe and non-destructive
+- Filters and sorting MUST be server-driven (not client-side)
+- All business logic MUST reside in the backend
+- No breaking changes to existing CRUD functionality
+
+## Success Criteria
+
+### Phase I (Foundation)
+- Web UI can fully manage todos (create, read, update, delete)
+- All CRUD operations persist in the database
+- Backend and frontend run independently on separate ports
+- API serves as the single source of truth
+
+### Phase II (Extended Features)
+- Users can organize tasks (tags, categories, or other grouping)
+- Users can search tasks by content or metadata
+- Users can prioritize tasks (high/medium/low or numeric priority)
+- Tasks can recur automatically (daily, weekly, monthly patterns)
+- Due dates function correctly and are enforced
+- Reminders trigger appropriately for tasks with due dates
+- All Phase II features are optional and backward compatible
+- Existing CRUD operations remain unchanged and functional
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+The constitution supersedes all other development practices. All changes MUST be documented and approved before implementation. Complexity MUST be justified and simpler alternatives documented when rejected.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+Amendments to this constitution require:
+1. Clear rationale for the change
+2. Impact analysis on existing features
+3. Version bump according to semantic versioning rules
+4. Documentation of updated principles in plan and spec templates
+
+**Version**: 1.1.0 | **Ratified**: 2025-12-31 | **Last Amended**: 2026-01-02

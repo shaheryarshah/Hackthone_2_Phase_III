@@ -1,0 +1,176 @@
+# API Contract: Create Todo with Extended Fields
+
+**Endpoint**: `POST /api/v1/todos`
+**Feature**: 002-todo-extended
+**Status**: Draft
+**Date**: 2026-01-02
+
+## Description
+
+Create a new todo task with optional extended fields for priority, tags, due date, and recurrence. All extended fields are optional and have safe defaults. Existing behavior is preserved for requests without new fields.
+
+---
+
+## Request
+
+### HTTP Method
+`POST`
+
+### Headers
+```
+Content-Type: application/json
+Authorization: Bearer <JWT_TOKEN>
+```
+
+### URL Parameters
+None
+
+### Request Body
+
+| Field | Type | Required? | Default | Constraints | Description |
+|-------|------|-----------|---------|-------------|-------------|
+| `title` | string | **Yes** | - | Task title (1-500 chars) |
+| `description` | string | No | `null` | Extended details (0-5000 chars) |
+| `priority` | enum | No | `"medium"` | `"low"` \| `"medium"` \| `"high"` |
+| `tags` | array of strings | No | `[]` | 0-10 tags, max 50 chars each |
+| `due_date` | datetime (ISO 8601) | No | `null` | UTC datetime string (e.g., `"2026-01-15T17:00:00Z"`) |
+| `recurrence` | enum | No | `"none"` | `"none"` \| `"daily"` \| `"weekly"` \| `"monthly"` |
+
+### Example Request (All Fields)
+
+```json
+{
+  "title": "Complete project report",
+  "description": "Final report for Q4 with financial analysis",
+  "priority": "high",
+  "tags": ["work", "urgent", "q4"],
+  "due_date": "2026-01-15T17:00:00Z",
+  "recurrence": "weekly"
+}
+```
+
+### Example Request (Minimal - Phase I Compatible)
+
+```json
+{
+  "title": "Buy groceries",
+  "description": "Milk, eggs, bread"
+}
+```
+
+---
+
+## Response
+
+### Success: 201 Created
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | integer | Unique task identifier |
+| `user_id` | integer | Task owner ID |
+| `title` | string | Task title |
+| `description` | string | Extended details |
+| `completed` | boolean | Completion status |
+| `priority` | string | `"low"` \| `"medium"` \| `"high"` (defaults to `"medium"` if null) |
+| `tags` | array | Array of tag strings |
+| `due_date` | datetime | ISO 8601 datetime or `null` |
+| `recurrence` | string | `"none"` \| `"daily"` \| `"weekly"` \| `"monthly"` |
+| `created_at` | datetime | ISO 8601 UTC timestamp |
+| `updated_at` | datetime | ISO 8601 UTC timestamp |
+
+### Example Response
+
+```json
+{
+  "id": 42,
+  "user_id": 1,
+  "title": "Complete project report",
+  "description": "Final report for Q4 with financial analysis",
+  "completed": false,
+  "priority": "high",
+  "tags": ["work", "urgent", "q4"],
+  "due_date": "2026-01-15T17:00:00Z",
+  "recurrence": "weekly",
+  "created_at": "2026-01-02T12:34:56Z",
+  "updated_at": "2026-01-02T12:34:56Z"
+}
+```
+
+---
+
+## Error Responses
+
+### 400 Bad Request
+
+| Error Code | Message | Cause |
+|------------|---------|--------|
+| `INVALID_TITLE` | `title` cannot be empty | Empty string or missing required field |
+| `INVALID_PRIORITY` | `priority` must be one of: low, medium, high | Invalid enum value |
+| `DUPLICATE_TAG` | Duplicate tag: `{tag_name}` | Same tag appears multiple times in array |
+| `INVALID_TAG_COUNT` | Maximum 10 tags allowed | More than 10 tags provided |
+| `INVALID_TAG_FORMAT` | Tag `{tag_name}` contains invalid characters | Special characters not allowed |
+| `INVALID_DUE_DATE` | `due_date` must be valid ISO 8601 datetime | Malformed datetime string |
+| `RECURRENCE_REQUIRES_DUE_DATE` | `recurrence` requires `due_date` to be set | Pattern provided without due date |
+| `INVALID_RECURRENCE` | `recurrence` must be one of: none, daily, weekly, monthly | Invalid enum value |
+
+### Example Error Response
+
+```json
+{
+  "error": "INVALID_RECURRENCE",
+  "message": "recurrence must be one of: none, daily, weekly, monthly",
+  "details": {
+    "field": "recurrence",
+    "provided_value": "hourly"
+  }
+}
+```
+
+---
+
+## Constraints & Rules
+
+### Business Logic
+
+1. **Default Values**:
+   - If `priority` is omitted → defaults to `"medium"` (stored as `null` in database)
+   - If `tags` is omitted → defaults to `[]` (stored as `null` in database)
+   - If `due_date` is omitted → stored as `null`
+   - If `recurrence` is omitted → defaults to `"none"` (stored as `null` in database)
+
+2. **Validation Rules**:
+   - `title` must not be empty string (1-500 characters)
+   - `priority` must be one of: `"low"`, `"medium"`, `"high"` (case-insensitive)
+   - `tags` must contain 0-10 unique strings (case-sensitive)
+   - Each tag must be 1-50 characters (letters, numbers, spaces, hyphens, underscores)
+   - `due_date` must be valid ISO 8601 UTC datetime
+   - `recurrence` must be one of: `"none"`, `"daily"`, `"weekly"`, `"monthly"` (case-insensitive)
+   - If `recurrence` != `"none"`, then `due_date` must be provided
+
+3. **Backward Compatibility**:
+   - Requests without any extended fields work exactly as Phase I
+   - All extended fields are optional
+   - Existing clients continue to work without modification
+
+---
+
+## Testing Checklist
+
+- [ ] Create task with all extended fields (priority, tags, due_date, recurrence)
+- [ ] Create task with only priority
+- [ ] Create task with only tags
+- [ ] Create task with only due_date (no recurrence)
+- [ ] Create task with only recurrence (must have due_date)
+- [ ] Create task with minimal request (Phase I compatibility)
+- [ ] Verify `priority` defaults to `"medium"` when omitted
+- [ ] Verify `tags` defaults to `[]` when omitted
+- [ ] Verify `due_date` can be `null` when omitted
+- [ ] Verify `recurrence` defaults to `"none"` when omitted
+- [ ] Test validation: empty `title` returns 400
+- [ ] Test validation: invalid `priority` returns 400
+- [ ] Test validation: duplicate tag returns 400
+- [ ] Test validation: 11+ tags returns 400
+- [ ] Test validation: `recurrence` without `due_date` returns 400
+- [ ] Test validation: invalid datetime format returns 400
+- [ ] Verify response includes all fields (including extended)
+- [ ] Verify `created_at` and `updated_at` are ISO 8601 UTC timestamps

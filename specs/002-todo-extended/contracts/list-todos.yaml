@@ -1,0 +1,266 @@
+# API Contract: List Todos with Search, Filter, and Sort
+
+**Endpoint**: `GET /api/v1/todos`
+**Feature**: 002-todo-extended
+**Status**: Draft
+**Date**: 2026-01-02
+
+## Description
+
+Retrieve list of todos with optional search, filtering, and sorting parameters. All filters are additive (AND logic) and applied server-side. Empty result sets are handled gracefully.
+
+---
+
+## Request
+
+### HTTP Method
+`GET`
+
+### Headers
+```
+Content-Type: application/json
+Authorization: Bearer <JWT_TOKEN>
+```
+
+### URL Parameters
+
+All query parameters are optional. Default behavior returns all tasks for authenticated user, sorted by `created_at DESC`.
+
+| Parameter | Type | Required? | Default | Constraints | Description |
+|-----------|------|-----------|---------|-------------|-------------|
+| `search` | string | No | `null` | Keyword search in title and description (case-insensitive) |
+| `status` | enum | No | `null` | `"completed"` \| `"pending"` | Filter by completion status |
+| `priority` | enum | No | `null` | `"low"` \| `"medium"` \| `"high"` | Filter by priority level |
+| `due_before` | datetime (ISO 8601) | No | `null` | Filter tasks due before date |
+| `due_after` | datetime (ISO 8601) | No | `null` | Filter tasks due after date |
+| `tag` | string | No | `null` | Filter tasks containing specific tag |
+| `sort_by` | enum | No | `"created_at"` | `"created_at"` \| `"due_date"` \| `"priority"` \| `"title"` | Sort field |
+| `sort_order` | enum | No | `"desc"` | `"asc"` \| `"desc"` | Sort direction |
+
+### Example Requests
+
+**Search by keyword**:
+```
+GET /api/v1/todos?search=meeting
+```
+
+**Filter by high priority and pending**:
+```
+GET /api/v1/todos?priority=high&status=pending
+```
+
+**Filter by due date range**:
+```
+GET /api/v1/todos?due_after=2026-01-01T00:00:00Z&due_before=2026-01-31T23:59:59Z
+```
+
+**Filter by tag**:
+```
+GET /api/v1/todos?tag=work
+```
+
+**Sort by due date**:
+```
+GET /api/v1/todos?sort_by=due_date&sort_order=asc
+```
+
+**Combine filters and sort**:
+```
+GET /api/v1/todos?search=report&priority=high&status=pending&sort_by=due_date
+```
+
+**Default (Phase I compatible)**:
+```
+GET /api/v1/todos
+```
+
+---
+
+## Response
+
+### Success: 200 OK
+
+Returns array of todo objects. If no tasks match filters, returns empty array.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `todos` | array | Array of todo objects |
+| `count` | integer | Total number of todos returned |
+| `has_more` | boolean | `true` if pagination would return more results |
+
+### Todo Object
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | integer | Unique task identifier |
+| `user_id` | integer | Task owner ID |
+| `title` | string | Task title |
+| `description` | string | Extended details |
+| `completed` | boolean | Completion status |
+| `priority` | string | `"low"` \| `"medium"` \| `"high"` (or `null`) |
+| `tags` | array | Array of tag strings |
+| `due_date` | datetime | ISO 8601 datetime or `null` |
+| `recurrence` | string | `"none"` \| `"daily"` \| `"weekly"` \| `"monthly"` (or `null`) |
+| `created_at` | datetime | ISO 8601 UTC timestamp |
+| `updated_at` | datetime | ISO 8601 UTC timestamp |
+| `overdue` | boolean | `true` if `due_date` is in past and `completed` is `false` |
+
+### Example Response
+
+```json
+{
+  "todos": [
+    {
+      "id": 42,
+      "user_id": 1,
+      "title": "Complete project report",
+      "description": "Final report for Q4",
+      "completed": false,
+      "priority": "high",
+      "tags": ["work", "urgent"],
+      "due_date": "2026-01-15T17:00:00Z",
+      "recurrence": "weekly",
+      "created_at": "2026-01-02T12:34:56Z",
+      "updated_at": "2026-01-02T12:34:56Z",
+      "overdue": false
+    },
+    {
+      "id": 43,
+      "user_id": 1,
+      "title": "Buy groceries",
+      "description": "Milk, eggs, bread",
+      "completed": false,
+      "priority": "medium",
+      "tags": [],
+      "due_date": "2026-01-03T10:00:00Z",
+      "recurrence": "none",
+      "created_at": "2026-01-02T10:15:23Z",
+      "updated_at": "2026-01-02T10:15:23Z",
+      "overdue": true
+    }
+  ],
+  "count": 2,
+  "has_more": false
+}
+```
+
+### Empty Result Response
+
+```json
+{
+  "todos": [],
+  "count": 0,
+  "has_more": false,
+  "message": "No tasks match your current filters. Try adjusting your search or filters."
+}
+```
+
+---
+
+## Error Responses
+
+### 400 Bad Request
+
+| Error Code | Message | Cause |
+|------------|---------|--------|
+| `INVALID_STATUS` | `status` must be one of: completed, pending | Invalid enum value |
+| `INVALID_PRIORITY` | `priority` must be one of: low, medium, high | Invalid enum value |
+| `INVALID_SORT_BY` | `sort_by` must be one of: created_at, due_date, priority, title | Invalid enum value |
+| `INVALID_SORT_ORDER` | `sort_order` must be one of: asc, desc | Invalid enum value |
+| `INVALID_DUE_DATE` | `due_before` or `due_after` must be valid ISO 8601 datetime | Malformed datetime |
+
+### Example Error Response
+
+```json
+{
+  "error": "INVALID_SORT_BY",
+  "message": "sort_by must be one of: created_at, due_date, priority, title",
+  "details": {
+    "field": "sort_by",
+    "provided_value": "created"
+  }
+}
+```
+
+---
+
+## Constraints & Rules
+
+### Business Logic
+
+1. **Additive Filters**: All filters are combined with AND logic (narrow results)
+2. **Search Scope**: `search` matches against both `title` and `description` fields
+3. **Owner Isolation**: Only tasks belonging to authenticated user are returned
+4. **Overdue Calculation**: `overdue = !completed AND due_date < NOW`
+5. **Sort Defaults**: If no `sort_by` provided, defaults to `created_at DESC`
+6. **Empty State**: When `todos` is empty, include helpful message
+
+### Filter Behavior
+
+| Filter | Logic | Example |
+|--------|------|---------|
+| `status=pending` | `completed = false` | Show only active tasks |
+| `status=completed` | `completed = true` | Show only done tasks |
+| `priority=high` | `priority = 'high'` | Show only urgent tasks |
+| `search=meeting` | `title ILIKE '%meeting%' OR description ILIKE '%meeting%'` | Text search |
+| `due_before=2026-01-31` | `due_date <= '2026-01-31T23:59:59Z'` | Tasks due before date |
+| `due_after=2026-01-01` | `due_date >= '2026-01-01T00:00:00Z'` | Tasks due after date |
+| `tag=work` | `tags CONTAINS 'work'` | Tasks with specific tag |
+
+### Sort Behavior
+
+| Sort By | Sort Order | Logic |
+|---------|-----------|-------|
+| `created_at` | `desc` (default) | Newest tasks first |
+| `created_at` | `asc` | Oldest tasks first |
+| `due_date` | `asc` | Earliest due date first |
+| `due_date` | `desc` | Latest due date first |
+| `priority` | `asc` | LOW → MEDIUM → HIGH |
+| `priority` | `desc` | HIGH → MEDIUM → LOW |
+| `title` | `asc` | Alphabetical A-Z |
+| `title` | `desc` | Alphabetical Z-A |
+
+### Performance
+
+- **Indexes**: Queries use database indexes on `completed`, `priority`, `due_date`, `created_at`
+- **Pagination**: Not implemented in this phase (return all matching tasks)
+- **Search Performance**: Full-text search on SQLite uses table scan (<10k tasks acceptable)
+- **Target**: <200ms p95 for filtered queries with <500 tasks
+
+### Backward Compatibility
+
+1. **Phase I Requests**: Request without any query parameters works as before
+2. **Response Format**: Always includes all extended fields (or `null`)
+3. **Default Behavior**: Unfiltered, unsorted (by `created_at DESC`) if no parameters
+4. **Optional Fields**: All query parameters are optional
+
+---
+
+## Testing Checklist
+
+- [ ] List all todos (no filters)
+- [ ] Filter by status (pending)
+- [ ] Filter by status (completed)
+- [ ] Filter by priority (low)
+- [ ] Filter by priority (medium)
+- [ ] Filter by priority (high)
+- [ ] Filter by due date range (before/after)
+- [ ] Filter by tag
+- [ ] Search by keyword (matches title)
+- [ ] Search by keyword (matches description)
+- [ ] Search by keyword (matches both)
+- [ ] Combine multiple filters (status + priority + tag)
+- [ ] Sort by due date (asc)
+- [ ] Sort by due date (desc)
+- [ ] Sort by priority (asc)
+- [ ] Sort by priority (desc)
+- [ ] Sort by title (asc)
+- [ ] Sort by title (desc)
+- [ ] Empty result returns helpful message
+- [ ] Verify `overdue` flag is calculated correctly
+- [ ] Test validation: invalid status returns 400
+- [ ] Test validation: invalid priority returns 400
+- [ ] Test validation: invalid sort_by returns 400
+- [ ] Test validation: invalid due_date returns 400
+- [ ] Verify only own tasks are returned
+- [ ] Verify response includes all extended fields

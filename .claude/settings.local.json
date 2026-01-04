@@ -1,0 +1,65 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git fetch:*)",
+      "Bash(git checkout:*)",
+      "Bash(powershell -ExecutionPolicy Bypass -File:*)",
+      "Bash(git rev-parse:*)",
+      "Bash(python -m uvicorn:*)",
+      "Bash(set PYTHONPATH=%CD%/src)",
+      "Bash(npm run dev:*)",
+      "Bash(npm install)",
+      "Bash(npm install:*)",
+      "Bash(curl:*)",
+      "Bash(python:*)",
+      "Bash(dir \"C:\\Users\\Shaheryar\\Desktop\\Hackthone_2\\Phase_II\\backend\\*.db\")",
+      "Bash(dir:*)",
+      "Bash(if exist todos.db del todos.db)",
+      "Bash(if exist srctodos.db del todos.db)",
+      "Bash(sqlite3:*)",
+      "Bash(copy:*)",
+      "Bash(powershell -ExecutionPolicy Bypass -Command \"Set-Content -Path ''C:\\Users\\Shaheryar\\Desktop\\Hackthone_2\\Phase_II\\backend\\.env'' -Value ''DATABASE_URL=sqlite:///./todos.db\nJWT_SECRET_KEY=your-super-secret-jwt-key-change-in-production\nJWT_ALGORITHM=HS256\nJWT_EXPIRATION_MINUTES=1440\nHOST=0.0.0.0\nPORT=8000\nCORS_ORIGINS=http://localhost:3000\nNODE_ENV=development\n''\")",
+      "Bash(TOKEN=\"<JWT_TOKEN>\")",
+      "Bash(__NEW_LINE__ curl -s -X POST http://localhost:8000/todos -H \"Content-Type: application/json\" -H \"Authorization: Bearer $TOKEN\" -d '{\"\"title\"\":\"\"Test todo with auth\"\", \"\"description\"\":\"\"Created with JWT auth\"\"}')",
+      "Bash(powershell -ExecutionPolicy Bypass -Command \"Set-Content -Path ''C:\\Users\\Shaheryar\\Desktop\\Hackthone_2\\Phase_II\\frontend\\.env.local'' -Value ''NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1\n''\")",
+      "Bash(cd:*)",
+      "Bash(.venvScriptspython.exe -m uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload)",
+      "Bash(powershell -ExecutionPolicy Bypass -Command \"cd ''C:\\Users\\Muhammmad Shaheryar\\Desktop\\Hackthone_2\\Phase_II\\backend''; .\\venv\\Scripts\\python.exe -m uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload\")",
+      "Bash(powershell -ExecutionPolicy Bypass -Command \"Get-Command ''C:\\Users\\Muhammmad Shaheryar\\Desktop\\Hackthone_2\\Phase_II\\backend\\venv\\Scripts\\python.exe'' | Select-Object -ExpandProperty Definition\")",
+      "Bash(powershell:*)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "Bash(claude mcp add context7:*)",
+      "Bash(claude mcp:*)",
+      "Bash(..venvScriptspython.exe -m uvicorn:*)",
+      "Bash(if not exist \"C:\\\\Users\\\\Muhammmad Shaheryar\\\\Desktop\\\\Hackthone_2\\\\Phase_II\\\\history\\\\prompts\\\\constitution\" mkdir \"C:\\\\Users\\\\Muhammmad Shaheryar\\\\Desktop\\\\Hackthone_2\\\\Phase_II\\\\history\\\\prompts\\\\constitution\")",
+      "Bash(findstr:*)",
+      "Bash(del \"C:\\\\Users\\\\Muhammmad Shaheryar\\\\Desktop\\\\Hackthone_2\\\\Phase_II\\\\backend\\\\todos.db\")",
+      "Bash(TOKEN=\"<JWT_TOKEN>\")",
+      "Bash(del:*)",
+      "Bash(cat:*)",
+      "Bash(TOKEN=\"<JWT_TOKEN>\")",
+      "Bash(.venvScriptspython.exe:*)",
+      "Bash(netstat:*)"
+    ]
+  },
+  "mcpServers": {
+    "github": {
+      "command": "uvx",
+      "args": [
+        "mcp-server-github"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "<YOUR_GITHUB_PAT_HERE>"
+      },
+      "inputs": [
+        {
+          "type": "promptString",
+          "id": "github_mcp_pat",
+          "description": "GitHub Personal Access Token",
+          "password": true
+        }
+      ]
+    }
+  }
+}
