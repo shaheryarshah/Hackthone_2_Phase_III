@@ -14,7 +14,7 @@ interface AuthContextType {
   error: string | null;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType | undefined>(undefined as any);
 
 interface AuthProviderProps {
   children: ReactNode;

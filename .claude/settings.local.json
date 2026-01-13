@@ -87,7 +87,11 @@
       "Bash(git commit -m \"docs: add GitHub Pages documentation site\n\n- Create a simple HTML documentation site for GitHub Pages\n- Include project overview, features, and setup instructions\n- Format with responsive CSS for good presentation\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\")",
       "Bash(git push -u origin gh-pages)",
       "Bash(git add README.md)",
-      "Bash(git commit -m \"docs: add project README with comprehensive documentation\n\n- Document AI Chatbot with Reusable Intelligence features\n- Include multilingual support, voice command processing, and task management\n- Detail architecture with backend \\(FastAPI\\) and frontend \\(React\\) components\n- Describe Agent Skills and Subagents architecture\n- Provide setup instructions and API endpoints documentation\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\")"
+      "Bash(git commit -m \"docs: add project README with comprehensive documentation\n\n- Document AI Chatbot with Reusable Intelligence features\n- Include multilingual support, voice command processing, and task management\n- Detail architecture with backend \\(FastAPI\\) and frontend \\(React\\) components\n- Describe Agent Skills and Subagents architecture\n- Provide setup instructions and API endpoints documentation\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\")",
+      "Bash(git add DEPLOYMENT_GUIDE.md README.md .github/workflows/nextjs.yml)",
+      "Bash(git commit -m \"docs: add deployment guide and documentation\n\n- Create comprehensive deployment guide explaining GitHub Pages limitations\n- Update README with deployment section and proper guidance\n- Add GitHub Actions workflow for Next.js deployment \\(for reference\\)\n- Document recommended deployment platforms \\(Vercel, Netlify, Railway, Render\\)\n- Explain backend/frontend deployment requirements\n- Provide troubleshooting guide for common deployment issues\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\")",
+      "Bash(git push origin main)",
+      "Bash(git pull origin main)"
     ]
   },
   "mcpServers": {
