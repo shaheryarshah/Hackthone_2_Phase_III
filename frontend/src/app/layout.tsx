@@ -6,7 +6,6 @@ const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'Todo App',
-  titleTemplate: '%s | Todo App',
   description: 'A simple todo management application',
 };
 

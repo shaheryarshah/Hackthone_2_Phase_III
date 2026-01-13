@@ -79,7 +79,15 @@
       "Bash(taskkill /F /PID 31584)",
       "Bash(git remote set-url origin https://github.com/shaheryarshah/Hackthone_2_Phase_III.git)",
       "Bash(git push -u origin 001-ai-chatbot)",
-      "Bash(git add .)"
+      "Bash(git add .)",
+      "Bash(git commit -m \"feat: add AI chatbot functionality and related features\n\n- Implement AI chatbot with speech recognition and synthesis\n- Add multilingual support with Urdu translation\n- Create task management system\n- Enhance frontend with chat interface and voice input\n- Update backend with new API routes and services\n- Add authentication and authorization services\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\")",
+      "Bash(git push origin 001-ai-chatbot)",
+      "Bash(git push -u origin main)",
+      "Bash(npm run build)",
+      "Bash(git commit -m \"docs: add GitHub Pages documentation site\n\n- Create a simple HTML documentation site for GitHub Pages\n- Include project overview, features, and setup instructions\n- Format with responsive CSS for good presentation\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\")",
+      "Bash(git push -u origin gh-pages)",
+      "Bash(git add README.md)",
+      "Bash(git commit -m \"docs: add project README with comprehensive documentation\n\n- Document AI Chatbot with Reusable Intelligence features\n- Include multilingual support, voice command processing, and task management\n- Detail architecture with backend \\(FastAPI\\) and frontend \\(React\\) components\n- Describe Agent Skills and Subagents architecture\n- Provide setup instructions and API endpoints documentation\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\")"
     ]
   },
   "mcpServers": {

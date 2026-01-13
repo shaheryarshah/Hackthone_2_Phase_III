@@ -44,7 +44,7 @@ export default function Home() {
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
 
-  const getAuthHeaders = useCallback(() => {
+  const getAuthHeaders = useCallback((): Record<string, string> => {
     const token = localStorage.getItem('access_token');
     return token ? { 'Authorization': `Bearer ${token}` } : {};
   }, []);
@@ -72,7 +72,7 @@ export default function Home() {
     }
 
     try {
-      const headers = getAuthHeaders();
+      const headers = getAuthHeaders() as HeadersInit;
 
       // Use ref values to avoid dependency issues
       const currentFilters = filtersRef.current;
