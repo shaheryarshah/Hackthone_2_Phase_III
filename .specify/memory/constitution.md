@@ -1,109 +1,57 @@
-<!--
-Sync Impact Report:
-- Version change: 1.0.0 → 1.1.0 (MINOR: material expansion of quality rules and success criteria)
-- Modified principles: None (all original principles preserved)
-- Added sections: Backward Compatibility principle, Extended Features scope
-- Removed sections: None
-- Templates requiring updates:
-  ✅ .specify/templates/plan-template.md - Constitution Check remains compatible
-  ✅ .specify/templates/spec-template.md - Scope/requirements alignment maintained
-  ✅ .specify/templates/tasks-template.md - Task categorization still reflects principles
-- Follow-up TODOs: None
+<!-- SYNC IMPACT REPORT
+Version change: 1.1.0 → 3.0.0
+Modified principles:
+- Removed I-VII principles from Phase II Constitution
+- Added I. Reusable Intelligence (New)
+- Added II. Subagent Orchestration (New)
+- Added III. Blueprint & Skill-First Implementation (New)
+- Added IV. Safe AI-to-Backend Interface
+- Added V. Minimal Viable Change
+- Added VI. Test-First Development
+Removed sections: Phase II specific constraints and success criteria
+Added sections: All new principles for Agentic Todo System
+Templates requiring updates:
+- .specify/templates/plan-template.md ✅ updated (Constitution Check section)
+- .specify/templates/spec-template.md ⚠ pending (may need updates for new principles)
+- .specify/templates/tasks-template.md ⚠ pending (may need updates for new principles)
+Follow-up TODOs: None
 -->
 
-# Phase II Constitution – Todo Full-Stack Web Application
+# Phase III Constitution – Agentic Todo System
 
 ## Core Principles
 
-### I. Spec-Driven Development
+### I. Reusable Intelligence (New)
+All AI logic must be encapsulated in **Agent Skills** (`.claude/skills/`). This ensures logic like "Urdu Translation" or "Task Summarization" is decoupled from the main agent and reusable across the project.
 
-All development MUST begin with a written specification. No code is written until the feature specification (spec.md) is documented and approved. The specification serves as the contract that governs all implementation decisions. Changes to implementation require specification updates first.
+### II. Subagent Orchestration (New)
+Complex workflows (e.g., processing voice -> updating DB -> confirming in Urdu) must be delegated to specialized **Claude Code Subagents**. The main agent acts only as a router.
 
-**Rationale**: Prevents scope creep, ensures shared understanding, and provides a reference for validation.
+### III. Blueprint & Skill-First Implementation (New)
+Development must use **Cloud-Native Blueprints** via Agent Skills to ensure infrastructure (Neon DB, FastAPI) is provisioned and managed programmatically by the agents.
 
-### II. Strict Separation of Concerns
+### IV. Safe AI-to-Backend Interface
+The AI layer MUST interact with the database exclusively through the **Official MCP SDK**. Direct SQL queries by the AI are prohibited to ensure safe, auditable, and consistent data access patterns.
 
-Backend and frontend MUST be completely separated. The backend is the single source of truth - it owns all business logic, data validation, and persistence. The frontend is a thin client that only displays data and captures user input. No business logic, data transformation, or validation rules exist in the frontend.
+### V. Minimal Viable Change
+All changes should follow the smallest viable diff principle. Do not refactor unrelated code during feature development. Focus only on the specific requirements at hand.
 
-**Rationale**: Enables independent scaling, testing, and evolution of each layer.
+### VI. Test-First Development
+All code must be developed using Test-Driven Development (TDD). Tests are written before implementation, ensuring functionality is verified from the start.
 
-### III. API-First Architecture
+## Additional Constraints
+Technology stack requirements: Python 3.11+, FastAPI, NeonDB, Claude Code Subagents, MCP SDK
+Security Requirements: All database interactions must go through MCP SDK, no direct SQL access allowed
+Deployment Policy: Infrastructure-as-Code using cloud-native blueprints
 
-The REST API is the authoritative contract between client and server. All data flows through well-defined HTTP endpoints. The frontend cannot bypass the API to access data or perform operations. API documentation MUST be maintained alongside code.
-
-**Rationale**: Ensures consistency, enables multiple clients, and provides clear boundaries.
-
-### IV. Input Validation on Backend
-
-All input from the frontend MUST be validated on the backend. Validation includes type checking, range validation, format validation, and business rule enforcement. Invalid input MUST return appropriate HTTP status codes with clear error messages.
-
-**Rationale**: Frontend validation can be bypassed; backend validation is the only reliable defense.
-
-### V. Proper Error Handling
-
-All API endpoints MUST return appropriate HTTP status codes (2xx for success, 4xx for client errors, 5xx for server errors). Error responses MUST include sufficient information for debugging without exposing internal system details. Errors MUST be logged with context for troubleshooting.
-
-**Rationale**: Enables reliable client handling and effective debugging.
-
-### VI. Clean Architecture
-
-Code MUST be organized with clear separation between models, services, and API layers. Each layer has a single responsibility. Dependencies flow inward (API → Service → Model). Testing MUST be possible at each layer in isolation.
-
-**Rationale**: Maintainability, testability, and understandability over time.
-
-### VII. Backward Compatibility
-
-All Phase II features MUST be backward compatible with existing functionality. No breaking changes are allowed to existing CRUD operations or API contracts. Existing database schema MUST be preserved; new fields can be added but existing columns cannot be removed or renamed.
-
-**Rationale**: Ensures existing users and integrations continue to function without interruption during feature rollout.
-
-## Technology Constraints
-
-- **Backend**: Python 3.11+ with FastAPI framework
-- **Frontend**: Next.js with React
-- **Database**: Single database (SQL or NoSQL) - existing DB schema can evolve but must preserve backward compatibility
-- **Communication**: HTTP REST API only
-- **No AI agents or MCP tools** are to be used in this phase
-
-## Quality Rules
-
-- All API contracts MUST be documented
-- All endpoints MUST have input validation
-- All errors MUST return appropriate HTTP status codes
-- Frontend and backend MUST run independently
-- All CRUD operations MUST persist to the database
-- Features MUST be optional per task (no forced opt-in)
-- Defaults MUST be safe and non-destructive
-- Filters and sorting MUST be server-driven (not client-side)
-- All business logic MUST reside in the backend
-- No breaking changes to existing CRUD functionality
-
-## Success Criteria
-
-### Phase I (Foundation)
-- Web UI can fully manage todos (create, read, update, delete)
-- All CRUD operations persist in the database
-- Backend and frontend run independently on separate ports
-- API serves as the single source of truth
-
-### Phase II (Extended Features)
-- Users can organize tasks (tags, categories, or other grouping)
-- Users can search tasks by content or metadata
-- Users can prioritize tasks (high/medium/low or numeric priority)
-- Tasks can recur automatically (daily, weekly, monthly patterns)
-- Due dates function correctly and are enforced
-- Reminders trigger appropriately for tasks with due dates
-- All Phase II features are optional and backward compatible
-- Existing CRUD operations remain unchanged and functional
+## Development Workflow
+Review Process: All PRs must verify compliance with constitution principles
+Quality Gates: Code review must check for proper use of Agent Skills, subagent orchestration, and MCP SDK compliance
+Testing Requirements: Integration tests required for all Agent Skill interactions
 
 ## Governance
+This constitution supersedes all other development practices. Amendments require documentation of the change, approval from project maintainers, and a migration plan if backward compatibility is affected.
 
-The constitution supersedes all other development practices. All changes MUST be documented and approved before implementation. Complexity MUST be justified and simpler alternatives documented when rejected.
+All PRs/reviews must verify compliance with Agent Skills usage, subagent orchestration, blueprint-first implementation, and safe database access via MCP SDK. Complexity must be justified with clear benefits outweighing the additional overhead.
 
-Amendments to this constitution require:
-1. Clear rationale for the change
-2. Impact analysis on existing features
-3. Version bump according to semantic versioning rules
-4. Documentation of updated principles in plan and spec templates
-
-**Version**: 1.1.0 | **Ratified**: 2025-12-31 | **Last Amended**: 2026-01-02
+**Version**: 3.0.0 | **Ratified**: 2025-12-20 | **Last Amended**: 2026-01-09

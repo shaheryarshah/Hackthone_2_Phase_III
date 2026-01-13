@@ -1,0 +1,414 @@
+openapi: 3.0.0
+info:
+  title: AI Chatbot API
+  description: API for the AI Chatbot with Reusable Intelligence
+  version: 1.0.0
+servers:
+  - url: http://localhost:8000
+    description: Development server
+  - url: https://api.example.com
+    description: Production server
+
+paths:
+  /api/chat:
+    post:
+      summary: Process chat message and return AI response
+      description: Handles both text and voice input, processes through the AI system, and returns appropriate response
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - message
+                - conversation_id
+              properties:
+                message:
+                  type: string
+                  description: The user's message or voice transcript
+                  example: "Add a new task to buy groceries"
+                conversation_id:
+                  type: string
+                  format: uuid
+                  description: The ID of the conversation, or null for new conversation
+                  example: "123e4567-e89b-12d3-a456-426614174000"
+                message_type:
+                  type: string
+                  enum: [text, voice_transcript]
+                  default: text
+                  description: The type of input message
+                language:
+                  type: string
+                  default: en
+                  description: The language of the input message (en, ur, etc.)
+                user_preferences:
+                  type: object
+                  description: User preferences for this session
+                  properties:
+                    language_preference:
+                      type: string
+                      description: User's preferred response language
+      responses:
+        '200':
+          description: Successfully processed message and returned AI response
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - response
+                  - conversation_id
+                  - message_id
+                properties:
+                  response:
+                    type: string
+                    description: The AI's response to the user
+                    example: "I've added the task 'buy groceries' to your list."
+                  conversation_id:
+                    type: string
+                    format: uuid
+                    description: The ID of the conversation
+                  message_id:
+                    type: string
+                    format: uuid
+                    description: The ID of the response message
+                  language:
+                    type: string
+                    description: The language of the response
+                  processed_tasks:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Task'
+                    description: Any tasks that were created or modified as a result of the message
+        '400':
+          description: Bad request - invalid input parameters
+        '500':
+          description: Internal server error
+
+  /api/tasks:
+    get:
+      summary: List user's tasks
+      description: Retrieve all tasks for the current user or conversation
+      parameters:
+        - name: conversation_id
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: Filter tasks by conversation ID
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [pending, in_progress, completed, cancelled]
+          description: Filter tasks by status
+        - name: priority
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [low, medium, high, urgent]
+          description: Filter tasks by priority
+      responses:
+        '200':
+          description: Successfully retrieved tasks
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tasks:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Task'
+        '400':
+          description: Bad request - invalid parameters
+        '500':
+          description: Internal server error
+    post:
+      summary: Create a new task
+      description: Create a new task via the MCP tools
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskInput'
+      responses:
+        '201':
+          description: Task created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          description: Bad request - invalid task data
+        '500':
+          description: Internal server error
+
+  /api/tasks/{task_id}:
+    get:
+      summary: Get a specific task
+      description: Retrieve details of a specific task
+      parameters:
+        - name: task_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the task to retrieve
+      responses:
+        '200':
+          description: Task retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '404':
+          description: Task not found
+        '500':
+          description: Internal server error
+    put:
+      summary: Update a task
+      description: Update an existing task via MCP tools
+      parameters:
+        - name: task_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the task to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskInput'
+      responses:
+        '200':
+          description: Task updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          description: Bad request - invalid task data
+        '404':
+          description: Task not found
+        '500':
+          description: Internal server error
+    delete:
+      summary: Delete a task
+      description: Remove a task via MCP tools
+      parameters:
+        - name: task_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the task to delete
+      responses:
+        '204':
+          description: Task deleted successfully
+        '404':
+          description: Task not found
+        '500':
+          description: Internal server error
+
+  /api/conversations:
+    get:
+      summary: List user's conversations
+      description: Retrieve all conversations for the current user
+      responses:
+        '200':
+          description: Successfully retrieved conversations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  conversations:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Conversation'
+        '500':
+          description: Internal server error
+
+  /api/conversations/{conversation_id}:
+    get:
+      summary: Get conversation history
+      description: Retrieve all messages in a specific conversation
+      parameters:
+        - name: conversation_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the conversation to retrieve
+      responses:
+        '200':
+          description: Conversation history retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  conversation:
+                    $ref: '#/components/schemas/Conversation'
+                  messages:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Message'
+        '404':
+          description: Conversation not found
+        '500':
+          description: Internal server error
+
+components:
+  schemas:
+    Task:
+      type: object
+      required:
+        - id
+        - title
+        - status
+        - priority
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The unique identifier for the task
+        conversation_id:
+          type: string
+          format: uuid
+          description: The conversation this task is associated with
+        title:
+          type: string
+          description: The task title
+          maxLength: 255
+        description:
+          type: string
+          description: Detailed task description
+        status:
+          type: string
+          enum: [pending, in_progress, completed, cancelled]
+          description: The current status of the task
+        priority:
+          type: string
+          enum: [low, medium, high, urgent]
+          description: The priority level of the task
+        due_date:
+          type: string
+          format: date-time
+          description: Optional deadline for the task
+        created_at:
+          type: string
+          format: date-time
+          description: When the task was created
+        updated_at:
+          type: string
+          format: date-time
+          description: When the task was last updated
+        completed_at:
+          type: string
+          format: date-time
+          description: When the task was completed (if applicable)
+
+    TaskInput:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+          description: The task title
+          maxLength: 255
+        description:
+          type: string
+          description: Detailed task description
+        status:
+          type: string
+          enum: [pending, in_progress, completed, cancelled]
+          default: pending
+        priority:
+          type: string
+          enum: [low, medium, high, urgent]
+          default: medium
+        due_date:
+          type: string
+          format: date-time
+          description: Optional deadline for the task
+
+    Conversation:
+      type: object
+      required:
+        - id
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The unique identifier for the conversation
+        user_id:
+          type: string
+          format: uuid
+          description: The user who owns this conversation
+        title:
+          type: string
+          description: Generated or user-provided title for the conversation
+        created_at:
+          type: string
+          format: date-time
+          description: When the conversation was started
+        updated_at:
+          type: string
+          format: date-time
+          description: When the conversation was last updated
+        language_preference:
+          type: string
+          description: The preferred language for this conversation
+
+    Message:
+      type: object
+      required:
+        - id
+        - conversation_id
+        - sender_type
+        - content
+        - timestamp
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The unique identifier for the message
+        conversation_id:
+          type: string
+          format: uuid
+          description: The conversation this message belongs to
+        sender_type:
+          type: string
+          enum: [user, assistant]
+          description: Who sent this message
+        content:
+          type: string
+          description: The message content
+        language:
+          type: string
+          description: The language of the message
+        timestamp:
+          type: string
+          format: date-time
+          description: When the message was sent
+        message_type:
+          type: string
+          enum: [text, voice_transcript, task_action, system]
+          description: The type of message

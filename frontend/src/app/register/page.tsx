@@ -36,10 +36,17 @@ export default function RegisterPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
-      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error(data.detail || 'Registration failed');
+        const errorData = await response.json();
+        if (response.status === 409) {
+          throw new Error(errorData.detail || 'Email already registered. Please use a different email or try logging in.');
+        } else {
+          throw new Error(errorData.detail || `Registration failed: ${response.statusText}`);
+        }
       }
+
+      const data = await response.json();
       localStorage.setItem('access_token', data.access_token);
       localStorage.setItem('user', JSON.stringify(data));
       router.push('/');

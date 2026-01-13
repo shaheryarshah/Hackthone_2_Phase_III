@@ -7,13 +7,16 @@ import FilterBar from '@/components/FilterBar';
 import SortControls from '@/components/SortControls';
 import type { Todo, User, TodoFilters, TodoSort } from '@/types';
 import Link from 'next/link';
+import FloatingChatButton from '@/components/FloatingChatButton';
 
 export default function Home() {
+  const [showWelcome, setShowWelcome] = useState(true);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [isFetching, setIsFetching] = useState(false);
+  const [shouldAutoRefresh, setShouldAutoRefresh] = useState(true);
   const hasLoadedOnce = useRef(false);
   const userRef = useRef<User | null>(null);
   const [filters, setFilters] = useState<TodoFilters>({});
@@ -21,8 +24,9 @@ export default function Home() {
   const fetchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Refs to access current values without causing re-renders
-  const filtersRef = useRef(filters);
-  const sortRef = useRef(sort);
+  const filtersRef = useRef<TodoFilters>(filters);
+  const sortRef = useRef<TodoSort>(sort);
+  const isFetchingRef = useRef<boolean>(false); // Initialize with false consistently
 
   // Update refs when state changes
   useEffect(() => {
@@ -32,6 +36,11 @@ export default function Home() {
   useEffect(() => {
     sortRef.current = sort;
   }, [sort]);
+
+  // Update isFetching ref without creating dependency cycle
+  useEffect(() => {
+    isFetchingRef.current = isFetching;
+  }); // Removed [isFetching] dependency to prevent potential infinite loop
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
 
@@ -49,7 +58,7 @@ export default function Home() {
 
   const fetchTodos = useCallback(async () => {
     // Prevent multiple simultaneous API calls
-    if (isFetching) {
+    if (isFetchingRef.current) {
       return;
     }
 
@@ -107,7 +116,7 @@ export default function Home() {
         setLoading(false);
       }
     }
-  }, [apiUrl, getAuthHeaders, isFetching]);
+  }, [apiUrl, getAuthHeaders]);
 
   const checkAuth = () => {
     const token = localStorage.getItem('access_token');
@@ -144,18 +153,18 @@ export default function Home() {
 
     // Set a new timeout
     fetchTimeoutRef.current = setTimeout(() => {
-      if (!isFetching) {
+      if (!isFetchingRef.current && shouldAutoRefresh) {
         fetchTodos();
       }
-    }, 300); // 300ms debounce
-  }, [fetchTodos, isFetching]);
+    }, 500); // Increase debounce time to 500ms for better performance
+  }, [fetchTodos, shouldAutoRefresh]);
 
-  // Fetch todos when filters or sort changes (but only if user is authenticated)
+  // Fetch todos when filters or sort changes (but only if user is authenticated and auto-refresh is enabled)
   useEffect(() => {
-    if (user) {
+    if (user && shouldAutoRefresh) {
       debouncedFetchTodos();
     }
-  }, [filters, sort, user, debouncedFetchTodos]); // Run when filters or sort change
+  }, [filters, sort, user, shouldAutoRefresh, debouncedFetchTodos]); // Run when filters or sort change
 
   const handleLogout = useCallback(() => {
     localStorage.removeItem('access_token');
@@ -171,15 +180,27 @@ export default function Home() {
   }, []);
 
   const handleTodoUpdate = useCallback(() => {
+    // Temporarily disable auto-refresh to prevent infinite loops
+    setShouldAutoRefresh(false);
     debouncedFetchTodos();
+    // Re-enable auto-refresh after a delay
+    setTimeout(() => setShouldAutoRefresh(true), 500);
   }, [debouncedFetchTodos]);
 
   const handleTodoDelete = useCallback(() => {
+    // Temporarily disable auto-refresh to prevent infinite loops
+    setShouldAutoRefresh(false);
     debouncedFetchTodos();
+    // Re-enable auto-refresh after a delay
+    setTimeout(() => setShouldAutoRefresh(true), 500);
   }, [debouncedFetchTodos]);
 
   const handleTodoToggleComplete = useCallback(() => {
+    // Temporarily disable auto-refresh to prevent infinite loops
+    setShouldAutoRefresh(false);
     debouncedFetchTodos();
+    // Re-enable auto-refresh after a delay
+    setTimeout(() => setShouldAutoRefresh(true), 500);
   }, [debouncedFetchTodos]);
 
   const handleTagClick = useCallback((tag: string) => {
@@ -291,12 +312,9 @@ export default function Home() {
               </div>
             )}
             {user && (
-              <div className="inline-flex items-center gap-3 px-6 py-3 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
+              <div className="inline-flex flex-wrap items-center gap-3 px-6 py-3 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
                 <span className="text-slate-300">Welcome back,</span>
                 <span className="font-semibold text-white">{user.email}</span>
-                <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
               </div>
             )}
           </div>
@@ -378,7 +396,7 @@ export default function Home() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                     </svg>
-                    {loading ? 'Loading tasks...' : 'Updating...'}
+                    {loading ? 'Loading tasks...' : 'Refreshing...'}
                   </div>
                 </div>
               ) : todos.length === 0 ? (
@@ -428,6 +446,9 @@ export default function Home() {
       <footer className="text-center py-8 text-gray-400 text-sm">
         <p>TaskFlow - Organize your life, one task at a time</p>
       </footer>
+
+      {/* Floating Chat Button */}
+      <FloatingChatButton />
     </div>
   );
 }

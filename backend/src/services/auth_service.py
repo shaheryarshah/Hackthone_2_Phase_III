@@ -28,13 +28,22 @@ class AuthService:
     @classmethod
     def verify_password(cls, plain_password: str, hashed_password: str) -> bool:
         """Verify a password against its hash."""
-        # bcrypt.hashpw() with gensalt() returns: "version$salt$hash"
-        # bcrypt.checkpw() needs the FULL hash with salt embedded
-        # So we just pass the hashed password directly
-        return bcrypt.checkpw(
-            plain_password.encode('utf-8'),
-            hashed_password.encode('utf-8')
-        )
+        # Check if the stored password is already hashed (starts with $2b$ or $2a$ or $2y$)
+        # If it doesn't start with these prefixes, it might be a plaintext password
+        if hashed_password.startswith('$2'):
+            # Properly hashed password
+            try:
+                return bcrypt.checkpw(
+                    plain_password.encode('utf-8'),
+                    hashed_password.encode('utf-8')
+                )
+            except ValueError:
+                # If bcrypt fails with invalid salt, the hash might be corrupted
+                return False
+        else:
+            # For backward compatibility - check against plaintext (NOT SECURE)
+            # In a real production environment, we'd migrate these passwords
+            return plain_password == hashed_password
 
     @classmethod
     def get_password_hash(cls, password: str) -> str:

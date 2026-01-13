@@ -1,0 +1,1022 @@
+Gemini
+
+Updating Constitution for Chatbot Integration
+My Stuff
+Image of 
+Image of 
+Image of 
+Updating Constitution for Chatbot Integration
+AI Chatbot Spec and Plan
+Fixing CORS Errors in Web Development
+Debugging CORS and 404 Errors
+App Deployment Signup/Login Issues
+Next.js Feature Flags Explained
+Set OpenRouter API Key on Vercel
+Connecting GitHub Pages and Vercel
+App Error: Failed to Fetch Todos
+How to Obtain and Use JWT
+Deploy GitHub Pages with YAML
+Vercel 404 Errors: Common Causes and Fixes
+GitHub 403 Error: Permission Denied
+Resolving Vitest Peer Dependency Conflict
+Troubleshooting HTTP 404 Errors
+check what is the issue my app
+Agentic Dev Stack Project Breakdown
+AI-Driven Todo App Evolution
+SpeckitPlus Urdu Translation Feature
+Book Personalization with Better-Auth
+Book Personalization with Better Auth
+Better-Auth: Signup, Personalization, Bonus
+scenery drawing
+Seanre drawing
+Drawing Ideas For Artistic Creation
+Book Personalization and Translation Integration
+i have completed book using specifyplus and also create rag chatbot so i want to deploy backend. fornt end already deployed on vercel. i have attached image all my back end files and folder. tell me which is the easiest method to deploy backend free and how to deploy step by step guide me.
+RAG Chatbot Integration for Robotics Book
+Greeting and Offer of Assistance
+AI-Driven Docusaurus Book Deployment
+मैं ठीक हूँ, आपकी मदद करूँ?
+Conjunctions Worksheet Solutions Explained
+Sentence Analysis: Subject, Verb, Object
+Image Upload for 16-Bit Character
+Conversation with Gemini
+i have build a todo full stack web application using specifyplus and i want to integrate chatbot of my existing project. do not change my existing project only integrate chatbot with my application. i am also share below after my existing constitution of my existing project.my chatbot requirements and my existing constitution is below. read carefully and tell me shall i update that constitution or leave as it is?
+
+
+
+existing constitution
+
+"""
+
+<!--
+
+Sync Impact Report:
+
+- Version change: 1.0.0 → 1.1.0 (MINOR: material expansion of quality rules and success criteria)
+
+- Modified principles: None (all original principles preserved)
+
+- Added sections: Backward Compatibility principle, Extended Features scope
+
+- Removed sections: None
+
+- Templates requiring updates:
+
+✅ .specify/templates/plan-template.md - Constitution Check remains compatible
+
+✅ .specify/templates/spec-template.md - Scope/requirements alignment maintained
+
+✅ .specify/templates/tasks-template.md - Task categorization still reflects principles
+
+- Follow-up TODOs: None
+
+-->
+
+
+
+# Phase II Constitution – Todo Full-Stack Web Application
+
+
+
+## Core Principles
+
+
+
+### I. Spec-Driven Development
+
+
+
+All development MUST begin with a written specification. No code is written until the feature specification (spec.md) is documented and approved. The specification serves as the contract that governs all implementation decisions. Changes to implementation require specification updates first.
+
+
+
+**Rationale**: Prevents scope creep, ensures shared understanding, and provides a reference for validation.
+
+
+
+### II. Strict Separation of Concerns
+
+
+
+Backend and frontend MUST be completely separated. The backend is the single source of truth - it owns all business logic, data validation, and persistence. The frontend is a thin client that only displays data and captures user input. No business logic, data transformation, or validation rules exist in the frontend.
+
+
+
+**Rationale**: Enables independent scaling, testing, and evolution of each layer.
+
+
+
+### III. API-First Architecture
+
+
+
+The REST API is the authoritative contract between client and server. All data flows through well-defined HTTP endpoints. The frontend cannot bypass the API to access data or perform operations. API documentation MUST be maintained alongside code.
+
+
+
+**Rationale**: Ensures consistency, enables multiple clients, and provides clear boundaries.
+
+
+
+### IV. Input Validation on Backend
+
+
+
+All input from the frontend MUST be validated on the backend. Validation includes type checking, range validation, format validation, and business rule enforcement. Invalid input MUST return appropriate HTTP status codes with clear error messages.
+
+
+
+**Rationale**: Frontend validation can be bypassed; backend validation is the only reliable defense.
+
+
+
+### V. Proper Error Handling
+
+
+
+All API endpoints MUST return appropriate HTTP status codes (2xx for success, 4xx for client errors, 5xx for server errors). Error responses MUST include sufficient information for debugging without exposing internal system details. Errors MUST be logged with context for troubleshooting.
+
+
+
+**Rationale**: Enables reliable client handling and effective debugging.
+
+
+
+### VI. Clean Architecture
+
+
+
+Code MUST be organized with clear separation between models, services, and API layers. Each layer has a single responsibility. Dependencies flow inward (API → Service → Model). Testing MUST be possible at each layer in isolation.
+
+
+
+**Rationale**: Maintainability, testability, and understandability over time.
+
+
+
+### VII. Backward Compatibility
+
+
+
+All Phase II features MUST be backward compatible with existing functionality. No breaking changes are allowed to existing CRUD operations or API contracts. Existing database schema MUST be preserved; new fields can be added but existing columns cannot be removed or renamed.
+
+
+
+**Rationale**: Ensures existing users and integrations continue to function without interruption during feature rollout.
+
+
+
+## Technology Constraints
+
+
+
+- **Backend**: Python 3.11+ with FastAPI framework
+
+- **Frontend**: Next.js with React
+
+- **Database**: Single database (SQL or NoSQL) - existing DB schema can evolve but must preserve backward compatibility
+
+- **Communication**: HTTP REST API only
+
+- **No AI agents or MCP tools** are to be used in this phase
+
+
+
+## Quality Rules
+
+
+
+- All API contracts MUST be documented
+
+- All endpoints MUST have input validation
+
+- All errors MUST return appropriate HTTP status codes
+
+- Frontend and backend MUST run independently
+
+- All CRUD operations MUST persist to the database
+
+- Features MUST be optional per task (no forced opt-in)
+
+- Defaults MUST be safe and non-destructive
+
+- Filters and sorting MUST be server-driven (not client-side)
+
+- All business logic MUST reside in the backend
+
+- No breaking changes to existing CRUD functionality
+
+
+
+## Success Criteria
+
+
+
+### Phase I (Foundation)
+
+- Web UI can fully manage todos (create, read, update, delete)
+
+- All CRUD operations persist in the database
+
+- Backend and frontend run independently on separate ports
+
+- API serves as the single source of truth
+
+
+
+### Phase II (Extended Features)
+
+- Users can organize tasks (tags, categories, or other grouping)
+
+- Users can search tasks by content or metadata
+
+- Users can prioritize tasks (high/medium/low or numeric priority)
+
+- Tasks can recur automatically (daily, weekly, monthly patterns)
+
+- Due dates function correctly and are enforced
+
+- Reminders trigger appropriately for tasks with due dates
+
+- All Phase II features are optional and backward compatible
+
+- Existing CRUD operations remain unchanged and functional
+
+
+
+## Governance
+
+
+
+The constitution supersedes all other development practices. All changes MUST be documented and approved before implementation. Complexity MUST be justified and simpler alternatives documented when rejected.
+
+
+
+Amendments to this constitution require:
+
+1. Clear rationale for the change
+
+2. Impact analysis on existing features
+
+3. Version bump according to semantic versioning rules
+
+4. Documentation of updated principles in plan and spec templates
+
+
+
+**Version**: 1.1.0 | **Ratified**: 2025-12-31 | **Last Amended**: 2026-01-02
+
+
+
+"""
+
+#Chatbot requirements
+
+"""
+
+I have compleated phase II now move on to phase III. i am share below my reqirements read carefully also use agent, subagents and skills for chatbot.
+
+"""
+
+#Phase III
+
+##AI-Powered Todo Chatbot
+
+OpenAI ChatKit, Agents SDK, Official MCP SDK
+
+200
+
+Dec 21, 2025
+
+
+
+Bonus Feature
+
+Reusable Intelligence – Create and use reusable intelligence via Claude Code Subagents and Agent Skills
+
+Create and use Cloud-Native Blueprints via Agent Skills
+
+Multi-language Support – Support Urdu in chatbot
+
+Voice Commands – Add voice input for todo commands.
+
+Phase III: Todo AI Chatbot
+
+Basic Level Functionality
+
+Objective: Create an AI-powered chatbot interface for managing todos through natural language using MCP (Model Context Protocol) server architecture and using Claude Code and Spec-Kit Plus.
+
+💡Development Approach: Use the Agentic Dev Stack workflow: Write spec → Generate plan → Break into tasks → Implement via Claude Code. No manual coding allowed. We will review the process, prompts, and iterations to judge each phase and project.
+
+Requirements
+
+Implement conversational interface for all Basic Level features
+
+Use OpenAI Agents SDK for AI logic
+
+Build MCP server with Official MCP SDK that exposes task operations as tools
+
+Stateless chat endpoint that persists conversation state to database
+
+AI agents use MCP tools to manage tasks. The MCP tools will also be stateless and will store state in the database.
+
+Technology Stack
+
+Component
+
+Technology
+
+Frontend
+
+OpenAI ChatKit
+
+Backend
+
+Python FastAPI
+
+AI Framework
+
+OpenAI Agents SDK
+
+MCP Server
+
+Official MCP SDK
+
+ORM
+
+SQLModel
+
+Database
+
+Neon Serverless PostgreSQL
+
+Authentication
+
+Better Auth
+
+
+
+Architecture
+
+┌─────────────────┐ ┌──────────────────────────────────────────────┐ ┌─────────────────┐
+
+│ │ │ FastAPI Server │ │ │
+
+│ │ │ ┌────────────────────────────────────────┐ │ │ │
+
+│ ChatKit UI │────▶│ │ Chat Endpoint │ │ │ Neon DB │
+
+│ (Frontend) │ │ │ POST /api/chat │ │ │ (PostgreSQL) │
+
+│ │ │ └───────────────┬────────────────────────┘ │ │ │
+
+│ │ │ │ │ │ - tasks │
+
+│ │ │ ▼ │ │ - conversations│
+
+│ │ │ ┌────────────────────────────────────────┐ │ │ - messages │
+
+│ │◀────│ │ OpenAI Agents SDK │ │ │ │
+
+│ │ │ │ (Agent + Runner) │ │ │ │
+
+│ │ │ └───────────────┬────────────────────────┘ │ │ │
+
+│ │ │ │ │ │ │
+
+│ │ │ ▼ │ │ │
+
+│ │ │ ┌────────────────────────────────────────┐ │────▶│ │
+
+│ │ │ │ MCP Server │ │ │ │
+
+│ │ │ │ (MCP Tools for Task Operations) │ │◀────│ │
+
+│ │ │ └────────────────────────────────────────┘ │ │ │
+
+└─────────────────┘ └──────────────────────────────────────────────┘ └─────────────────┘
+
+Database Models
+
+Model
+
+Fields
+
+Description
+
+Task
+
+user_id, id, title, description, completed, created_at, updated_at
+
+Todo items
+
+Conversation
+
+user_id, id, created_at, updated_at
+
+Chat session
+
+Message
+
+user_id, id, conversation_id, role (user/assistant), content, created_at
+
+Chat history
+
+
+
+Chat API Endpoint
+
+Method
+
+Endpoint
+
+Description
+
+POST
+
+/api/{user_id}/chat
+
+Send message & get AI response
+
+
+
+Request
+
+Field
+
+Type
+
+Required
+
+Description
+
+conversation_id
+
+integer
+
+No
+
+Existing conversation ID (creates new if not provided)
+
+message
+
+string
+
+Yes
+
+User's natural language message
+
+
+
+Response
+
+Field
+
+Type
+
+Description
+
+conversation_id
+
+integer
+
+The conversation ID
+
+response
+
+string
+
+AI assistant's response
+
+tool_calls
+
+array
+
+List of MCP tools invoked
+
+
+
+MCP Tools Specification
+
+The MCP server must expose the following tools for the AI agent:
+
+Tool: add_task
+
+Purpose
+
+Create a new task
+
+Parameters
+
+user_id (string, required), title (string, required), description (string, optional)
+
+Returns
+
+task_id, status, title
+
+Example Input
+
+{“user_id”: “ziakhan”, "title": "Buy groceries", "description": "Milk, eggs, bread"}
+
+Example Output
+
+{"task_id": 5, "status": "created", "title": "Buy groceries"}
+
+
+
+Tool: list_tasks
+
+Purpose
+
+Retrieve tasks from the list
+
+Parameters
+
+status (string, optional: "all", "pending", "completed")
+
+Returns
+
+Array of task objects
+
+Example Input
+
+{user_id (string, required), "status": "pending"}
+
+Example Output
+
+[{"id": 1, "title": "Buy groceries", "completed": false}, ...]
+
+
+
+Tool: complete_task
+
+Purpose
+
+Mark a task as complete
+
+Parameters
+
+user_id (string, required), task_id (integer, required)
+
+Returns
+
+task_id, status, title
+
+Example Input
+
+{“user_id”: “ziakhan”, "task_id": 3}
+
+Example Output
+
+{"task_id": 3, "status": "completed", "title": "Call mom"}
+
+
+
+Tool: delete_task
+
+Purpose
+
+Remove a task from the list
+
+Parameters
+
+user_id (string, required), task_id (integer, required)
+
+Returns
+
+task_id, status, title
+
+Example Input
+
+{“user_id”: “ziakhan”, "task_id": 2}
+
+Example Output
+
+{"task_id": 2, "status": "deleted", "title": "Old task"}
+
+
+
+Tool: update_task
+
+Purpose
+
+Modify task title or description
+
+Parameters
+
+user_id (string, required), task_id (integer, required), title (string, optional), description (string, optional)
+
+Returns
+
+task_id, status, title
+
+Example Input
+
+{“user_id”: “ziakhan”, "task_id": 1, "title": "Buy groceries and fruits"}
+
+Example Output
+
+{"task_id": 1, "status": "updated", "title": "Buy groceries and fruits"}
+
+
+
+Agent Behavior Specification
+
+Behavior
+
+Description
+
+Task Creation
+
+When user mentions adding/creating/remembering something, use add_task
+
+Task Listing
+
+When user asks to see/show/list tasks, use list_tasks with appropriate filter
+
+Task Completion
+
+When user says done/complete/finished, use complete_task
+
+Task Deletion
+
+When user says delete/remove/cancel, use delete_task
+
+Task Update
+
+When user says change/update/rename, use update_task
+
+Confirmation
+
+Always confirm actions with friendly response
+
+Error Handling
+
+Gracefully handle task not found and other errors
+
+
+
+
+
+Conversation Flow (Stateless Request Cycle)
+
+Receive user message
+
+Fetch conversation history from database
+
+Build message array for agent (history + new message)
+
+Store user message in database
+
+Run agent with MCP tools
+
+Agent invokes appropriate MCP tool(s)
+
+Store assistant response in database
+
+Return response to client
+
+Server holds NO state (ready for next request)
+
+Natural Language Commands
+
+The chatbot should understand and respond to:
+
+User Says
+
+Agent Should
+
+"Add a task to buy groceries"
+
+Call add_task with title "Buy groceries"
+
+"Show me all my tasks"
+
+Call list_tasks with status "all"
+
+"What's pending?"
+
+Call list_tasks with status "pending"
+
+"Mark task 3 as complete"
+
+Call complete_task with task_id 3
+
+"Delete the meeting task"
+
+Call list_tasks first, then delete_task
+
+"Change task 1 to 'Call mom tonight'"
+
+Call update_task with new title
+
+"I need to remember to pay bills"
+
+Call add_task with title "Pay bills"
+
+"What have I completed?"
+
+Call list_tasks with status "completed"
+
+
+
+Deliverables
+
+GitHub repository with:
+
+/frontend – ChatKit-based UI
+
+/backend – FastAPI + Agents SDK + MCP
+
+/specs – Specification files for agent and MCP tools
+
+Database migration scripts
+
+README with setup instructions
+
+
+
+Working chatbot that can:
+
+Manage tasks through natural language via MCP tools
+
+Maintain conversation context via database (stateless server)
+
+Provide helpful responses with action confirmations
+
+Handle errors gracefully
+
+Resume conversations after server restart
+
+
+
+OpenAI ChatKit Setup & Deployment
+
+Domain Allowlist Configuration (Required for Hosted ChatKit)
+
+
+
+Before deploying your chatbot frontend, you must configure OpenAI's domain allowlist for security:
+
+
+
+Deploy your frontend first to get a production URL:
+
+Vercel: https://your-app.vercel.app
+
+GitHub Pages: https://username.github.io/repo-name
+
+Custom domain: https://yourdomain.com
+
+
+
+Add your domain to OpenAI's allowlist:
+
+Navigate to: https://platform.openai.com/settings/organization/security/domain-allowlist
+
+Click "Add domain"
+
+Enter your frontend URL (without trailing slash)
+
+Save changes
+
+
+
+Get your ChatKit domain key:
+
+After adding the domain, OpenAI will provide a domain key
+
+Pass this key to your ChatKit configuration
+
+
+
+Environment Variables
+
+NEXT_PUBLIC_OPENAI_DOMAIN_KEY=your-domain-key-here
+
+
+
+Note: The hosted ChatKit option only works after adding the correct domains under Security → Domain Allowlist. Local development (localhost) typically works without this configuration.
+
+Key Architecture Benefits
+
+Aspect
+
+Benefit
+
+MCP Tools
+
+Standardized interface for AI to interact with your app
+
+Single Endpoint
+
+Simpler API — AI handles routing to tools
+
+Stateless Server
+
+Scalable, resilient, horizontally scalable
+
+Tool Composition
+
+Agent can chain multiple tools in one turn
+
+
+
+
+
+Key Stateless Architecture Benefits
+
+Scalability: Any server instance can handle any request
+
+Resilience: Server restarts don't lose conversation state
+
+Horizontal scaling: Load balancer can route to any backend
+
+Testability: Each request is independent and reproducible.
+
+"""
+
+now give me sp.constitution, sp.spec, sp.plan, sp.tasks
+
+"""
+
+To integrate the Phase III AI features while keeping your existing Phase II project intact, you must update the Constitution.
+
+The Phase II Constitution explicitly stated: "No AI agents or MCP tools are to be used in this phase." To move forward, we need to evolve the rules to allow the Agentic Dev Stack (Claude Code, MCP, and OpenAI Agents SDK) while maintaining the "Strict Separation of Concerns" from Phase II.
+
+Here is the updated configuration for your project.
+
+1. sp.constitution (Updated to v2.0.0)
+Markdown
+# Phase III Constitution – AI-Powered Todo Application
+
+## Core Principles
+### I. Agentic-First Development (New)
+All Phase III development must follow the Agentic Dev Stack: Spec → Plan → Tasks → Claude Code implementation. No manual code edits.
+
+### II. Strict Separation of Concerns (Preserved)
+The Backend remains the source of truth. The AI Agent layer acts as an orchestration layer between the Frontend and the MCP Server.
+
+### III. MCP-Centric Architecture (New)
+All AI actions must be performed through the Model Context Protocol (MCP). The Agent cannot access the database directly; it must use MCP tools that interface with the existing Backend logic.
+
+### IV. Statelessness (New)
+The Chat API and MCP tools must be stateless. All session context (history) and task data must persist in the Neon PostgreSQL database.
+
+### V. Backward Compatibility (Strict)
+Integration of the chatbot MUST NOT break existing Phase I/II REST endpoints or UI. The chatbot is an additive feature.
+
+## Technology Constraints
+- **Backend:** Python 3.11+ (FastAPI)
+- **AI Framework:** OpenAI Agents SDK & OpenAI ChatKit
+- **Protocol:** Official MCP SDK
+- **Database:** Neon Serverless PostgreSQL (SQLModel ORM)
+- **Tools:** Claude Code for implementation, Better Auth for security.
+
+## Quality Rules
+- AI must confirm every action (CRUD) to the user.
+- Multi-language support (English/Urdu) is required.
+- Voice commands must be supported via the frontend.
+- No breaking changes to the existing DB schema (only additive migrations).
+
+**Version**: 2.0.0 | **Ratified**: 2026-01-09
+2. sp.spec (Chatbot Integration)
+Title: Phase III: AI-Powered Todo Chatbot
+
+Status: Draft
+
+Scope: Integration of a natural language interface using MCP.
+
+Functional Requirements
+Natural Language Processing: Use OpenAI Agents to interpret user intent (Create, List, Update, Delete).
+
+MCP Server: Implement an MCP server that exposes add_task, list_tasks, complete_task, delete_task, and update_task as tools.
+
+Conversation Management: Store chat history in conversations and messages tables to maintain context across stateless requests.
+
+Urdu Support: System prompt must allow for bilingual interaction.
+
+Voice Input: Integration of Web Speech API or ChatKit voice features.
+
+3. sp.plan (Implementation Strategy)
+Step 1: Database Migration
+Add Conversation and Message tables to the existing SQLModel schema.
+
+Link Task table to user_id for multi-tenant support.
+
+Step 2: MCP Server Development
+Create a standalone MCP server using the Official SDK.
+
+Map MCP tools to existing Phase II service logic.
+
+Step 3: AI Agent Layer
+Initialize OpenAI Agents SDK within the FastAPI backend.
+
+Configure the "Runner" to handle the tool-call loop.
+
+Step 4: Frontend Integration
+Implement OpenAI ChatKit in the Next.js frontend.
+
+Connect the UI to the /api/{user_id}/chat endpoint.
+
+4. sp.tasks (Action Items)
+Task ID	Category	Description
+T3-01	DB	Create migration for Conversation and Message models.
+T3-02	Backend	Implement MCP Server with tools: add_task, list_tasks, etc.
+T3-03	Backend	Create POST /api/{user_id}/chat endpoint with stateless logic.
+T3-04	AI	Write System Prompt for Agent (includes Urdu and Task management rules).
+T3-05	Frontend	Integrate OpenAI ChatKit components into a new /chat page.
+T3-06	Frontend	Add Voice Command support using browser Speech Recognition.
+T3-07	QA	Verify that Chatbot actions correctly update the Phase II Task List UI.
+Next Step
+Would you like me to generate the SQLModel code for the new Conversation and Message tables so you can run your first migration?
+
+i want to use reuseable intellegence of claude code subagent and skills fot building my chatbot rewrite constitution, spec, plan and task respectevely and make sure chatbot all requrement include on my spec
+
+To integrate the Phase III AI-Powered Todo Chatbot while leveraging Claude Code Subagents and Agent Skills (Reusable Intelligence), we must pivot the architecture.
+
+In this model, the Skills act as the "knowledge playbook" (how to handle Urdu, how to format tasks), and Subagents act as the "specialized workers" (a Task Manager subagent, a Voice-to-Text subagent).
+
+1. sp.constitution (v3.0.0)
+Evolution: Adding Multi-Agent orchestration and Reusable Intelligence.
+
+Markdown
+# Phase III Constitution – Agentic Todo System
+
+## Core Principles
+### I. Reusable Intelligence (New)
+All AI logic must be encapsulated in **Agent Skills** (`.claude/skills/`). This ensures logic like "Urdu Translation" or "Task Summarization" is decoupled from the main agent and reusable across the project.
+
+### II. Subagent Orchestration (New)
+Complex workflows (e.g., processing voice -> updating DB -> confirming in Urdu) must be delegated to specialized **Claude Code Subagents**. The main agent acts only as a router.
+
+### III. Blueprint & Skill-First Implementation (New)
+Development must use **Cloud-Native Blueprints** via Agent Skills to ensure infrastructure (Neon DB, FastAPI) is provisioned and managed programmatically by the agents.
+
+### IV. Safe AI-to-Backend Interface
+The AI layer MUST interact with the database exclusively through the **Official MCP SDK**. Direct SQL queries by the AI are prohibited to maintain the "Separation of Concerns" established in Phase II.
+
+## Technology Constraints
+- **Agents:** OpenAI Agents SDK (Runtime) / Claude Code (Dev-time Orchestration).
+- **Intelligence:** Claude Code Subagents & Agent Skills.
+- **Protocol:** Official MCP SDK for stateless tool execution.
+- **Language:** Urdu and English (Idiomatic support).
+- **Voice:** Web Speech API integration in Frontend.
+
+**Version**: 3.0.0 | **Ratified**: 2026-01-09
+2. sp.spec (AI Chatbot)
+Reusable Intelligence Assets
+Skill: urdu-translator: Handles idiomatic translation between English and Urdu.
+
+Skill: task-formatter: Standardizes how tasks are displayed in the chat (e.g., using Markdown tables).
+
+Subagent: task-manager: Specialized in CRUD operations via MCP tools.
+
+Subagent: voice-processor: Handles the cleaning and intent extraction from raw voice-to-text strings.
+
+Requirements Mapping
+Requirement	Implementation Detail
+Urdu Support	urdu-translator skill applied to all assistant responses.
+Voice Commands	Frontend captures audio -> API sends text -> voice-processor subagent.
+Persistence	Stateless FastAPI endpoints; state stored in Neon Postgres (conversations table).
+MCP Integration	Server exposing add_task, list_tasks, delete_task, update_task.
+3. sp.plan (Implementation)
+Phase A: Intelligence Layer (The "Brain")
+Define .claude/skills/task-logic.md containing business rules for todo management.
+
+Define .claude/skills/multilingual-support.md with Urdu grammar and RTL formatting rules.
+
+Configure subagents via /agents command:
+
+ManagerBot: High-level router.
+
+TodoWorker: Limited to MCP tool access only.
+
+Phase B: Infrastructure & MCP
+Update SQLModel to include Conversation and Message tables for chat memory.
+
+Build the MCP Server using the Python SDK to wrap existing Phase II logic as tools.
+
+Phase C: UI/UX Integration
+Deploy OpenAI ChatKit on the frontend.
+
+Implement the voice-to-text toggle in the input bar.
+
+Connect the frontend to the new /api/chat endpoint.
+
+4. sp.tasks (Action Items)
+Task ID	Component	Task Description	Skill/Subagent
+T3-01	Setup	Initialize .claude/skills directory and create the urdu-translator skill.	Skill: urdu-translator
+T3-02	Logic	Create task-manager subagent with restricted access to MCP tools only.	Subagent: task-manager
+T3-03	Backend	Implement POST /api/chat using OpenAI Agents SDK to call the task-manager subagent.	Subagent: task-manager
+T3-04	MCP	Build MCP server tools (add_task, list_tasks) for interaction with Neon DB.	MCP Server
+T3-05	Frontend	Integrate ChatKit and map the "Record" button to the voice input handler.	Subagent: voice-processor
+T3-06	UI	Apply RTL (Right-to-Left) CSS dynamically when Urdu is detected in chat.	Skill: urdu-translator
+Next Step
+Would you like me to provide the System Prompt and YAML configuration for your urdu-translator Skill so you can add it to your project immediately?
+
+
+
+
+Gemini can make mistakes, so double-check it
+

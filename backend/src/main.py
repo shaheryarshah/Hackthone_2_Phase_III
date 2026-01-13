@@ -24,6 +24,8 @@ from models.user import User
 from schemas.todo import TodoCreate, TodoUpdate, TodoResponse, TodoListResponse
 from services.todo_service import TodoService
 from api.routes.auth import router as auth_router
+from api.chat_router import router as chat_router
+from api.task_router import router as task_router
 from middleware.auth import get_current_user
 
 
@@ -50,6 +52,10 @@ app.add_middleware(
 
 # Include auth routes
 app.include_router(auth_router, prefix="/api/v1")
+
+# Include chat and task routes
+app.include_router(chat_router)
+app.include_router(task_router, prefix="/api/v1")
 
 
 def _calculate_overdue(todo: Todo) -> bool:
@@ -217,4 +223,6 @@ def get_todos_due_soon(
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    import os
+    port = int(os.getenv("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)
