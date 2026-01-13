@@ -5,8 +5,10 @@
  * with the backend FastAPI JWT authentication system.
  */
 
-import { createAuthClient } from 'better-auth';
+// FIX: Importing from 'better-auth/react' instead of 'better-auth'
+import { createAuthClient } from 'better-auth/react';
 import type { User, AuthResponse } from '@/types';
+import axios from 'axios';
 
 // API configuration
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
@@ -141,12 +143,7 @@ export const authHelpers = {
 
 /**
  * API client with automatic JWT token attachment.
- *
- * This wraps axios to automatically include the Bearer token
- * in all authenticated requests.
  */
-import axios from 'axios';
-
 export const apiClient = axios.create({
   baseURL: API_URL,
   headers: {
