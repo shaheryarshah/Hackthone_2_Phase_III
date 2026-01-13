@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Chatbot Demo</title>
+    <title>AI Chatbot Demo - GitHub Pages</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
@@ -68,29 +68,40 @@
         }
         .message {
             margin-bottom: 1rem;
-            padding: 0.5rem;
+            padding: 0.75rem;
             border-radius: 8px;
+            max-width: 80%;
         }
         .user-message {
             background-color: #dcf8c6;
-            margin-left: 20%;
-            text-align: right;
+            margin-left: auto;
+            text-align: left;
+            border-bottom-right-radius: 2px;
         }
         .bot-message {
             background-color: #ffffff;
-            margin-right: 20%;
+            margin-right: auto;
             border: 1px solid #e1e5e9;
+            border-bottom-left-radius: 2px;
+        }
+        .message-header {
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+            font-size: 0.9rem;
         }
         .input-area {
             display: flex;
             gap: 0.5rem;
         }
-        .input-area input {
+        .input-area textarea {
             flex: 1;
             padding: 0.75rem;
             border: 1px solid #ddd;
             border-radius: 8px;
             font-size: 1rem;
+            resize: vertical;
+            min-height: 50px;
+            max-height: 150px;
         }
         .input-area button {
             padding: 0.75rem 1.5rem;
@@ -100,6 +111,10 @@
             border-radius: 8px;
             cursor: pointer;
         }
+        .input-area button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
         .feature-list {
             list-style: none;
             padding: 0;
@@ -108,7 +123,7 @@
             padding: 0.75rem 0;
             border-bottom: 1px solid #eee;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
         }
         .feature-list li:last-child {
             border-bottom: none;
@@ -116,6 +131,7 @@
         .feature-icon {
             margin-right: 0.75rem;
             font-size: 1.2rem;
+            margin-top: 0.25rem;
         }
         .info-box {
             background: #e3f2fd;
@@ -123,6 +139,27 @@
             padding: 1rem;
             margin: 1rem 0;
             border-radius: 0 4px 4px 0;
+        }
+        .voice-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+            margin-left: 10px;
+        }
+        .voice-btn.recording {
+            background: #dc3545;
+        }
+        .loading {
+            color: #666;
+            font-style: italic;
         }
     </style>
 </head>
@@ -137,27 +174,19 @@
     <div class="container">
         <div class="demo-container">
             <div class="chat-section">
-                <h2>Interactive Demo</h2>
+                <h2>Interactive Chat Interface</h2>
                 <div class="chat-messages" id="chatMessages">
                     <div class="message bot-message">
-                        Hello! I'm your AI assistant. I can help you with tasks, translate between languages, and process voice commands. How can I assist you today?
-                    </div>
-                    <div class="message user-message">
-                        Can you help me create a task to buy groceries?
-                    </div>
-                    <div class="message bot-message">
-                        Of course! I can help you create a task. Your task "buy groceries" has been created successfully. Would you like to set a priority or due date?
-                    </div>
-                    <div class="message user-message">
-                        Yes, please set it as high priority and due tomorrow.
-                    </div>
-                    <div class="message bot-message">
-                        Great! I've updated your task "buy groceries" with high priority and due date of tomorrow. Is there anything else I can help you with?
+                        <div class="message-header">Assistant:</div>
+                        <div>Hello! I'm your AI assistant. I can help you with tasks, translate between languages, and process voice commands. How can I assist you today?</div>
                     </div>
                 </div>
                 <div class="input-area">
-                    <input type="text" id="messageInput" placeholder="Type your message here..." onkeypress="handleKeyPress(event)">
-                    <button onclick="sendMessage()">Send</button>
+                    <textarea id="messageInput" placeholder="Type your message here... (Supports English and Urdu)" onkeypress="handleKeyPress(event)"></textarea>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <button onclick="sendMessage()" id="sendBtn">Send</button>
+                        <button class="voice-btn" onclick="toggleVoiceInput()" id="voiceBtn" title="Voice Input">●</button>
+                    </div>
                 </div>
             </div>
 
@@ -166,46 +195,33 @@
                 <ul class="feature-list">
                     <li>
                         <span class="feature-icon">🌍</span>
-                        <span>Multilingual Support (English/Urdu)</span>
+                        <span><strong>Multilingual Support</strong><br>Bi-directional translation between English and Urdu with RTL formatting</span>
                     </li>
                     <li>
                         <span class="feature-icon">🎤</span>
-                        <span>Voice Command Processing</span>
+                        <span><strong>Voice Command Processing</strong><br>Voice input with intent extraction</span>
                     </li>
                     <li>
                         <span class="feature-icon">📋</span>
-                        <span>Smart Task Management</span>
+                        <span><strong>Smart Task Management</strong><br>Create, update, and manage tasks through chat interface</span>
                     </li>
                     <li>
                         <span class="feature-icon">🤖</span>
-                        <span>Subagent Orchestration</span>
+                        <span><strong>Subagent Orchestration</strong><br>Specialized agents for different functions</span>
                     </li>
                     <li>
                         <span class="feature-icon">🔒</span>
-                        <span>Secure Database Access</span>
+                        <span><strong>Secure Database Access</strong><br>MCP SDK for safe operations</span>
                     </li>
                     <li>
                         <span class="feature-icon">🔄</span>
-                        <span>Reusable Intelligence</span>
+                        <span><strong>Reusable Intelligence</strong><br>Agent Skills for modular functionality</span>
                     </li>
                 </ul>
 
                 <div class="info-box">
-                    <strong>Note:</strong> This is a frontend demonstration. The full application requires a backend API server to function properly.
+                    <strong>Note:</strong> This is a frontend demonstration. The full application requires a backend API server to function properly. Visit the <a href="https://github.com/shaheryarshah/Hackthone_2_Phase_III" target="_blank">GitHub repository</a> for complete setup instructions.
                 </div>
-
-                <h3>How to Run Locally</h3>
-                <pre style="background: #f4f4f4; padding: 1rem; border-radius: 4px; font-size: 0.9rem; overflow-x: auto;">
-# Backend Setup
-cd backend
-pip install -r requirements.txt
-python -m src.main
-
-# Frontend Setup
-cd frontend
-npm install
-npm run dev
-                </pre>
             </div>
         </div>
 
@@ -217,61 +233,178 @@ npm run dev
             <p><strong>Backend (FastAPI):</strong> SQLModel-based data models, translation services, chat services, and MCP server for safe database operations.</p>
             <p><strong>Frontend (React):</strong> ChatInterface with voice input, TaskDisplay, and RTL support for multilingual features.</p>
 
-            <h3>Repository</h3>
-            <p>Full source code available at: <a href="https://github.com/shaheryarshah/Hackthone_2_Phase_III" target="_blank">https://github.com/shaheryarshah/Hackthone_2_Phase_III</a></p>
+            <h3>How to Run Locally</h3>
+            <pre style="background: #f4f4f4; padding: 1rem; border-radius: 4px; font-size: 0.9rem; overflow-x: auto;">
+# Backend Setup
+cd backend
+pip install -r requirements.txt
+python -m src.main
+
+# Frontend Setup
+cd frontend
+npm install
+npm run dev
+            </pre>
         </div>
     </div>
 
     <script>
+        let isRecording = false;
+        let isProcessing = false;
+
         function sendMessage() {
             const input = document.getElementById('messageInput');
             const message = input.value.trim();
 
-            if (message) {
+            if (message && !isProcessing) {
+                isProcessing = true;
+
                 // Add user message
                 const chatMessages = document.getElementById('chatMessages');
                 const userMessageDiv = document.createElement('div');
                 userMessageDiv.className = 'message user-message';
-                userMessageDiv.textContent = message;
+                userMessageDiv.innerHTML = `
+                    <div class="message-header">You:</div>
+                    <div>${escapeHtml(message)}</div>
+                `;
                 chatMessages.appendChild(userMessageDiv);
 
-                // Simulate bot response
-                setTimeout(() => {
-                    const botMessageDiv = document.createElement('div');
-                    botMessageDiv.className = 'message bot-message';
+                // Clear input
+                input.value = '';
+                input.style.height = '50px';
 
-                    // Simple response logic
-                    if (message.toLowerCase().includes('hello') || message.toLowerCase().includes('hi')) {
-                        botMessageDiv.textContent = "Hello there! How can I assist you today?";
-                    } else if (message.toLowerCase().includes('task')) {
-                        botMessageDiv.textContent = "I can help you manage tasks! You can create, update, or delete tasks through our chat interface.";
-                    } else if (message.toLowerCase().includes('translate') || message.toLowerCase().includes('language')) {
-                        botMessageDiv.textContent = "I support bidirectional translation between English and Urdu with proper RTL formatting.";
-                    } else {
-                        const responses = [
-                            "That's interesting! Tell me more about what you need.",
-                            "I understand. How else can I assist you?",
-                            "Thanks for sharing! Is there anything specific you'd like help with?",
-                            "I'm here to help! What else would you like to know?",
-                            "Great question! I can help with various tasks and information."
-                        ];
-                        botMessageDiv.textContent = responses[Math.floor(Math.random() * responses.length)];
+                // Show loading indicator
+                const loadingDiv = document.createElement('div');
+                loadingDiv.className = 'message bot-message loading';
+                loadingDiv.id = 'loading';
+                loadingDiv.innerHTML = `
+                    <div class="message-header">Assistant:</div>
+                    <div>Assistant is typing...</div>
+                `;
+                chatMessages.appendChild(loadingDiv);
+
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                // Simulate API delay and generate response
+                setTimeout(() => {
+                    // Remove loading indicator
+                    const loadingElement = document.getElementById('loading');
+                    if (loadingElement) {
+                        loadingElement.remove();
                     }
 
-                    chatMessages.appendChild(botMessageDiv);
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
-                }, 1000);
+                    // Generate response based on user input
+                    let response = generateResponse(message);
 
-                input.value = '';
-                chatMessages.scrollTop = chatMessages.scrollHeight;
+                    // Add bot response
+                    const botMessageDiv = document.createElement('div');
+                    botMessageDiv.className = 'message bot-message';
+                    botMessageDiv.innerHTML = `
+                        <div class="message-header">Assistant:</div>
+                        <div>${escapeHtml(response)}</div>
+                    `;
+                    chatMessages.appendChild(botMessageDiv);
+
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                    isProcessing = false;
+                }, 1500);
             }
+        }
+
+        function generateResponse(userMessage) {
+            const lowerMsg = userMessage.toLowerCase();
+
+            if (lowerMsg.includes('hello') || lowerMsg.includes('hi') || lowerMsg.includes('hey')) {
+                return "Hello! I'm your AI assistant. How can I help you today?";
+            } else if (lowerMsg.includes('task') || lowerMsg.includes('todo') || lowerMsg.includes('to do')) {
+                return "I can help you manage tasks! You can create, update, or delete tasks through our interface. Would you like to try creating a task?";
+            } else if (lowerMsg.includes('translate') || lowerMsg.includes('urdu') || lowerMsg.includes('language')) {
+                return "I support bidirectional translation between English and Urdu. Just type in Urdu and I'll respond appropriately with proper RTL formatting!";
+            } else if (lowerMsg.includes('voice') || lowerMsg.includes('speak') || lowerMsg.includes('audio')) {
+                return "Voice command processing is supported in the full application. You can speak to me and I'll understand and respond to your commands.";
+            } else if (lowerMsg.includes('help')) {
+                return "I can help you with various tasks:\\n• Create and manage tasks\\n• Translate between English and Urdu\\n• Process voice commands\\n• Answer questions about the application\\n\\nWhat would you like to do?";
+            } else if (lowerMsg.includes('name')) {
+                return "I'm an AI assistant built as part of the AI Chatbot with Reusable Intelligence project. I can help you with tasks, translations, and more!";
+            } else if (lowerMsg.includes('project') || lowerMsg.includes('about')) {
+                return "This is the AI Chatbot with Reusable Intelligence project. It features multilingual support, voice processing, and task management capabilities with specialized subagents for different functions.";
+            } else {
+                const responses = [
+                    "That's interesting! Tell me more about what you need.",
+                    "I understand. How else can I assist you?",
+                    "Thanks for sharing! Is there anything specific you'd like help with?",
+                    "I'm here to help! What else would you like to know?",
+                    "Great question! I can help with various tasks and information.",
+                    "I can assist you with task management, translations, and more!",
+                    "Feel free to ask me about tasks, translations, or voice commands.",
+                    "I'm designed to help with productivity tasks and multilingual communication."
+                ];
+                return responses[Math.floor(Math.random() * responses.length)];
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
 
         function handleKeyPress(event) {
-            if (event.key === 'Enter') {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
                 sendMessage();
             }
         }
+
+        function toggleVoiceInput() {
+            const voiceBtn = document.getElementById('voiceBtn');
+            const chatMessages = document.getElementById('chatMessages');
+
+            if (!isRecording) {
+                // Start recording simulation
+                isRecording = true;
+                voiceBtn.classList.add('recording');
+                voiceBtn.textContent = '●';
+
+                // Add voice input message
+                const voiceMessageDiv = document.createElement('div');
+                voiceMessageDiv.className = 'message user-message';
+                voiceMessageDiv.innerHTML = `
+                    <div class="message-header">You (Voice):</div>
+                    <div>Simulated voice input: "This is a test of the voice input feature."</div>
+                `;
+                chatMessages.appendChild(voiceMessageDiv);
+
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                // Simulate voice processing
+                setTimeout(() => {
+                    let response = "I heard your voice input. In the full application, this would be processed through a speech-to-text service and I would respond appropriately.";
+
+                    const botMessageDiv = document.createElement('div');
+                    botMessageDiv.className = 'message bot-message';
+                    botMessageDiv.innerHTML = `
+                        <div class="message-header">Assistant:</div>
+                        <div>${escapeHtml(response)}</div>
+                    `;
+                    chatMessages.appendChild(botMessageDiv);
+
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }, 2000);
+            } else {
+                // Stop recording
+                isRecording = false;
+                voiceBtn.classList.remove('recording');
+                voiceBtn.textContent = '●';
+            }
+        }
+
+        // Auto-resize textarea
+        const messageInput = document.getElementById('messageInput');
+        messageInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight > 150 ? 150 : this.scrollHeight) + 'px';
+        });
 
         // Auto-scroll to bottom of chat
         window.onload = function() {
