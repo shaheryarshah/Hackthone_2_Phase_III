@@ -14,7 +14,8 @@ interface AuthContextType {
   error: string | null;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined as any);
+// Fixed the initialization to resolve namespace issues
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -22,9 +23,6 @@ interface AuthProviderProps {
 
 /**
  * Authentication provider component that manages auth state.
- *
- * Handles login, registration, logout, and session persistence
- * using localStorage for token storage.
  */
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
@@ -115,9 +113,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
 /**
  * Hook to access authentication context.
- *
- * @returns Authentication context with user, login, logout, etc.
- * @throws Error if used outside of AuthProvider
  */
 export function useAuth(): AuthContextType {
   const context = useContext(AuthContext);
@@ -129,7 +124,6 @@ export function useAuth(): AuthContextType {
 
 /**
  * Hook to get the current access token.
- * Useful for making direct API calls.
  */
 export function useAccessToken(): string | null {
   return authHelpers.getAccessToken();
@@ -137,10 +131,9 @@ export function useAccessToken(): string | null {
 
 /**
  * Hook to check if user is authenticated.
- * Returns false while loading.
  */
 export function useIsAuthenticated(): boolean {
-  const { isAuthenticated, isLoading } = useAuth();
-  if (isLoading) return false;
-  return isAuthenticated;
+  const context = useAuth();
+  if (context.isLoading) return false;
+  return context.isAuthenticated;
 }
