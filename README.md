@@ -35,6 +35,21 @@ This project implements an AI Chatbot with Reusable Intelligence features, inclu
 - **TodoWorker**: Handles task CRUD operations via MCP tools
 - **voice-processor**: Processes voice input and extracts intent
 
+## Deployment
+
+### Important: GitHub Pages Limitation
+
+**GitHub Pages cannot host this Next.js application** because it requires backend connectivity. See [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) for proper deployment options.
+
+### Recommended Deployment Platforms
+
+1. **Vercel** (Recommended for Next.js)
+2. **Netlify**
+3. **Railway**
+4. **Render**
+
+See [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) for detailed instructions.
+
 ## Setup
 
 ### Prerequisites
@@ -72,6 +87,7 @@ This project implements an AI Chatbot with Reusable Intelligence features, inclu
 - `DATABASE_URL`: Connection string for the database
 - `MCP_SERVER_URL`: URL for MCP server
 - `MCP_API_KEY`: API key for MCP server access
+- `NEXT_PUBLIC_API_URL`: Frontend API URL (for deployment)
 
 ## Contributing
 
